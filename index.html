@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ocupación CLRM04</title>
+<style>
+  :root{--y:#FFE600;--yd:#E6CF00;--tx:#333;--mu:#666;--bd:#D9D9D9;--g:#00A650;--o:#FFB020;--o2:#E07020;--r:#F23D4F;--e:#E6E6E6}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Segoe UI",Arial,sans-serif;color:var(--tx);background:#fff;font-size:13px}
+  #hdr{background:var(--y);border-bottom:2px solid var(--yd);padding:8px 14px;display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center}
+  #hdr h1{font-size:16px;margin:0}
+  .meta{font-size:11px;color:#555}
+  .kpis{display:flex;flex-wrap:wrap;gap:4px 16px;margin-left:auto}
+  .k{text-align:center;min-width:56px}.k b{display:block;font-size:20px;line-height:1.1}.k span{font-size:9px;color:#555;text-transform:uppercase}
+  #banner{display:none;padding:5px 14px;font-size:12px;font-weight:600;text-align:center}
+  #banner.warn{display:block;background:var(--o);color:#333}#banner.bad{display:block;background:var(--r);color:#fff}
+  #tabs{display:flex;gap:2px;padding:8px 14px 0;border-bottom:1px solid var(--bd);flex-wrap:wrap}
+  .tab{border:1px solid var(--bd);border-bottom:none;background:#f5f5f5;padding:6px 14px;cursor:pointer;border-radius:6px 6px 0 0;font-size:12px}
+  .tab.on{background:#fff;font-weight:700;border-color:#999;box-shadow:inset 0 3px 0 var(--y)}
+  .tab small{color:var(--mu);font-weight:400;margin-left:6px}
+  #bar{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;padding:8px 14px;background:#fafafa;border-bottom:1px solid var(--bd);font-size:11px}
+  #bar input{border:1px solid var(--bd);border-radius:4px;padding:4px 8px;font-size:12px;width:230px;font-family:Consolas,monospace}
+  .leg i{display:inline-block;width:11px;height:11px;margin:0 4px 0 12px;vertical-align:-1px;border-radius:2px}
+  #hits{padding:0 14px;font-size:11px;color:var(--mu)}
+  #hits button{font:inherit;font-family:Consolas,monospace;margin:2px 4px 2px 0;padding:1px 6px;border:1px solid var(--bd);border-radius:10px;background:#fff;cursor:pointer}
+  #map{padding:10px 14px 24px}
+  .aisle{margin-bottom:14px;border:1px solid var(--bd);border-radius:6px;background:#fff}
+  .ah{display:flex;gap:12px;align-items:center;padding:4px 10px;background:#f5f5f5;border-bottom:1px solid var(--bd);border-radius:6px 6px 0 0;font-size:11px}
+  .ah b{font-size:12px}.ah .bar{flex:0 0 120px;height:6px;background:var(--e);border-radius:3px;overflow:hidden}.ah .bar div{height:100%;background:var(--g)}
+  .scroll{overflow-x:auto;padding:8px 10px}
+  .bays{display:flex;gap:6px;align-items:flex-end;width:max-content}
+  .bay{display:flex;flex-direction:column;align-items:center}
+  .bay .bn{font-size:8px;color:#888;margin-top:2px}
+  .lv{display:flex;gap:1px;margin-bottom:1px}
+  .c{width:8px;height:8px;border-radius:1px;background:var(--e);cursor:pointer}
+  .n1{background:var(--g)}.n2{background:var(--o)}.n3{background:var(--o2)}.n4{background:var(--r)}
+  .c.hit{outline:2px solid #1565c0;outline-offset:1px;position:relative;z-index:2}
+  .floor{display:flex;flex-wrap:wrap;gap:2px;max-width:100%}
+  .floor .c{width:11px;height:11px}
+  #det{position:sticky;bottom:0;background:#fffbe0;border-top:2px solid var(--yd);padding:6px 14px;font-size:12px;display:none}
+  #det code{background:#fff;padding:1px 5px;border-radius:3px}
+</style></head><body>
+<div id="hdr">
+  <h1>&#11041; Ocupaci&oacute;n Ubicaciones &middot; <span id="whName">CLRM04</span></h1>
+  <div class="meta" id="meta">Cargando&hellip;</div>
+  <div class="kpis" id="kpis"></div>
+</div>
+<div id="banner"></div>
+<div id="tabs"></div>
+<div id="bar">
+  <input id="q" type="search" placeholder="Buscar ubicación o SKU…  ej: RS-0-108-017" autocomplete="off">
+  <span class="leg"><i style="background:var(--e)"></i>vac&iacute;a<i style="background:var(--g)"></i>1 SKU<i style="background:var(--o)"></i>2<i style="background:var(--o2)"></i>3<i style="background:var(--r)"></i>4+ SKUs</span>
+  <label class="meta"><input type="checkbox" id="onlyOcc" style="width:auto"> Solo pasillos con stock</label>
+  <span class="meta" id="zinfo"></span>
+</div>
+<div id="hits"></div>
+<div id="map"></div>
+<div id="det"></div>
+<script>
+// ── Configuración (para otro CD basta cambiar WH y las etiquetas) ─────────────────────────
+const CONFIG = {
+  WH: 'CLRM04',
+  DATA_URL: 'data/ocupacion_CLRM04.json',
+  REFRESH_SECONDS: 60,
+  WARN_HOURS: 3,      // aviso ámbar si el archivo se generó hace más de N horas
+  BAD_HOURS: 24,      // aviso rojo
+  ZONE_LABELS: { RS: 'RS · Rack selectivo', RK: 'RK · Rack', BL: 'BL · Bulk (piso)' },
+  ZONE_ORDER: ['RS', 'RK', 'BL']
+};
+
+const $ = id => document.getElementById(id);
+const fmt = n => Number(n).toLocaleString('es-CL');
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let DATA = null, ZONE = null, QUERY = '';
+
+// ── Estadísticas calculadas en el navegador (no dependen del bloque stats del JSON) ──────
+function zoneStats(z) {
+  const s = { slots: 0, occ: 0, multi: 0, n: [0, 0, 0, 0] };
+  for (const bays of Object.values(z.aisles)) for (const rows of Object.values(bays)) for (const r of rows) {
+    s.slots++; if (r[2] > 0) s.occ++; if (r[2] > 1) s.multi++; if (r[2] >= 1) s.n[Math.min(r[2], 4) - 1]++;
+  }
+  return s;
+}
+function aisleStats(bays) {
+  let slots = 0, occ = 0;
+  for (const rows of Object.values(bays)) for (const r of rows) { slots++; if (r[2] > 0) occ++; }
+  return { slots, occ };
+}
+const pct = (a, b) => b ? (a / b * 100) : 0;
+
+// ── Antigüedad (hora de Chile) ───────────────────────────────────────────────────────────
+function chileNowMs() { return Date.parse(new Date().toLocaleString('sv-SE', { timeZone: 'America/Santiago' }).replace(' ', 'T') + 'Z'); }
+function ageHours(dateStr, timeStr) { return (chileNowMs() - Date.parse(dateStr + 'T' + timeStr + 'Z')) / 3600000; }
+function humanAge(h) { return h < 1 ? Math.max(0, Math.round(h * 60)) + ' min' : h < 48 ? h.toFixed(1) + ' h' : Math.floor(h / 24) + ' días'; }
+
+function renderMeta() {
+  const d = DATA, b = $('banner');
+  const hGen = ageHours(d.date, d.updated);
+  const cut = d.stock_cut ? d.stock_cut.replace(' ', 'T') : null;
+  const hCut = cut ? (chileNowMs() - Date.parse(cut + 'Z')) / 3600000 : null;
+  $('meta').innerHTML = `Último movimiento de stock <b>${esc(d.stock_cut || '—')}</b>${hCut != null ? ' (hace ' + humanAge(hCut) + ')' : ''}` +
+    ` &middot; archivo generado <b>${esc(d.date)} ${esc(d.updated)}</b> (hace ${humanAge(hGen)})`;
+  b.className = hGen > CONFIG.BAD_HOURS ? 'bad' : hGen > CONFIG.WARN_HOURS ? 'warn' : '';
+  b.textContent = hGen > CONFIG.BAD_HOURS ? `⚠ DATOS DESACTUALIZADOS: el archivo se generó hace ${humanAge(hGen)}`
+    : hGen > CONFIG.WARN_HOURS ? `Atención: el archivo se generó hace ${humanAge(hGen)}` : '';
+}
+
+function renderKpis() {
+  const t = { slots: 0, occ: 0, multi: 0, n: [0, 0, 0, 0] };
+  for (const z of Object.values(DATA.zones)) { const s = zoneStats(z); t.slots += s.slots; t.occ += s.occ; t.multi += s.multi; s.n.forEach((v, i) => t.n[i] += v); }
+  const k = (v, l) => `<div class="k"><b>${v}</b><span>${l}</span></div>`;
+  $('kpis').innerHTML = k(fmt(t.slots), 'Ubic. totales') + k(fmt(t.occ), 'Ubic. ocupadas') + k(pct(t.occ, t.slots).toFixed(1) + '%', '% ocupación') +
+    k(pct(t.multi, t.occ).toFixed(0) + '%', '% multi-SKU') + k(fmt(t.n[0]), '1 SKU') + k(fmt(t.n[1]), '2 SKUs') + k(fmt(t.n[2]), '3 SKUs') + k(fmt(t.n[3]), '4+ SKUs');
+}
+
+function renderTabs() {
+  const zones = CONFIG.ZONE_ORDER.filter(z => DATA.zones[z]).concat(Object.keys(DATA.zones).filter(z => !CONFIG.ZONE_ORDER.includes(z)));
+  if (!ZONE || !DATA.zones[ZONE]) ZONE = zones[0];
+  $('tabs').innerHTML = zones.map(z => {
+    const s = zoneStats(DATA.zones[z]);
+    return `<div class="tab ${z === ZONE ? 'on' : ''}" data-z="${z}">${esc(CONFIG.ZONE_LABELS[z] || z)}<small>${pct(s.occ, s.slots).toFixed(0)}% ocup.</small></div>`;
+  }).join('');
+}
+
+// ── Mapa ─────────────────────────────────────────────────────────────────────────────────
+function slotCell(zona, aisle, bay, r) {
+  const id = r[5];
+  return `<div class="c n${Math.min(r[2], 4)}" data-id="${id}" data-n="${r[2]}" data-q="${r[3]}" data-s="${esc(r[4])}" title="${id} · ${r[2]} SKU · ${r[3]} un."></div>`;
+}
+
+function renderMap() {
+  const z = DATA.zones[ZONE], zs = zoneStats(z);
+  $('zinfo').textContent = `${fmt(zs.slots)} ubicaciones · ${fmt(zs.occ)} ocupadas (${pct(zs.occ, zs.slots).toFixed(1)}%) · ${Object.keys(z.aisles).length} pasillos`;
+  const onlyOcc = $('onlyOcc').checked;
+  const html = Object.keys(z.aisles).map(Number).sort((a, b) => a - b).filter(aisle => !onlyOcc || aisleStats(z.aisles[aisle]).occ > 0).map(aisle => {
+    const bays = z.aisles[aisle], as = aisleStats(bays);
+    const bayKeys = Object.keys(bays).map(Number).sort((a, b) => a - b);
+    let body;
+    const hasLevels = bayKeys.some(b => bays[b].some(r => r[0] > 0));
+    if (hasLevels) {
+      body = '<div class="bays">' + bayKeys.map(b => {
+        const byLvl = {};
+        bays[b].forEach(r => (byLvl[r[0]] = byLvl[r[0]] || []).push(r));
+        const rows = Object.keys(byLvl).map(Number).sort((x, y) => y - x).map(l =>
+          '<div class="lv">' + byLvl[l].sort((p, q) => p[1] - q[1]).map(r => slotCell(ZONE, aisle, b, r)).join('') + '</div>').join('');
+        return `<div class="bay">${rows}<div class="bn">${b}</div></div>`;
+      }).join('') + '</div>';
+    } else {
+      body = '<div class="floor">' + bayKeys.map(b => bays[b].map(r => slotCell(ZONE, aisle, b, r)).join('')).join('') + '</div>';
+    }
+    return `<div class="aisle"><div class="ah"><b>Pasillo ${String(aisle).padStart(3, '0')}</b><span>${fmt(as.slots)} ubic. · ${fmt(as.occ)} ocupadas (${pct(as.occ, as.slots).toFixed(0)}%)</span>` +
+      `<div class="bar"><div style="width:${pct(as.occ, as.slots).toFixed(0)}%"></div></div></div><div class="scroll">${body}</div></div>`;
+  }).join('');
+  $('map').innerHTML = html;
+  applySearch();
+}
+
+// ── Búsqueda ─────────────────────────────────────────────────────────────────────────────
+function applySearch() {
+  const q = QUERY.trim().toUpperCase(), cells = $('map').querySelectorAll('.c');
+  let hits = [];
+  cells.forEach(c => {
+    const m = q.length >= 3 && (c.dataset.id.includes(q) || c.dataset.s.toUpperCase().includes(q));
+    c.classList.toggle('hit', !!m);
+    if (m && hits.length < 15) hits.push(c.dataset.id);
+  });
+  const total = q.length >= 3 ? $('map').querySelectorAll('.c.hit').length : 0;
+  $('hits').innerHTML = q.length >= 3
+    ? `${total} coincidencias en ${esc(CONFIG.ZONE_LABELS[ZONE] || ZONE)}: ` + hits.map(h => `<button data-id="${h}">${h}</button>`).join('') + (total > 15 ? '…' : '')
+    : '';
+}
+
+function showDetail(el) {
+  const d = $('det');
+  d.style.display = 'block';
+  d.innerHTML = `<b>Ubicación</b> <code>${esc(el.dataset.id)}</code> &middot; <b>${el.dataset.n}</b> SKU &middot; <b>${fmt(el.dataset.q)}</b> unidades` +
+    (el.dataset.s ? ` &middot; SKUs: <code>${esc(el.dataset.s.split(',').join('</code> <code>'))}</code>${Number(el.dataset.n) > 8 ? ' …' : ''}` : ' &middot; vacía');
+}
+
+// ── Carga y eventos ──────────────────────────────────────────────────────────────────────
+async function load() {
+  try {
+    const r = await fetch(CONFIG.DATA_URL + '?t=' + Date.now(), { cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status + ' al leer ' + CONFIG.DATA_URL);
+    const d = await r.json();
+    const changed = !DATA || d.updated !== DATA.updated || d.date !== DATA.date;
+    DATA = d;
+    $('whName').textContent = d.wh || CONFIG.WH;
+    document.title = 'Ocupación ' + (d.wh || CONFIG.WH);
+    renderMeta();
+    if (changed) { renderKpis(); renderTabs(); renderMap(); }
+  } catch (e) {
+    $('banner').className = 'bad'; $('banner').textContent = 'Error al cargar los datos: ' + e.message;
+  }
+}
+$('tabs').addEventListener('click', e => { const t = e.target.closest('.tab'); if (t) { ZONE = t.dataset.z; renderTabs(); renderMap(); } });
+$('map').addEventListener('click', e => { const c = e.target.closest('.c'); if (c) showDetail(c); });
+$('hits').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; const c = $('map').querySelector(`.c[data-id="${b.dataset.id}"]`); if (c) { c.scrollIntoView({ block: 'center', inline: 'center' }); showDetail(c); } });
+$('q').addEventListener('input', e => { QUERY = e.target.value; applySearch(); });
+$('onlyOcc').addEventListener('change', renderMap);
+// Enlaces directos: ?zone=BL  y  ?occ=1 (solo pasillos con stock)
+const _qs = new URLSearchParams(location.search);
+if (_qs.get('zone')) ZONE = _qs.get('zone').toUpperCase();
+if (_qs.get('occ') === '1') $('onlyOcc').checked = true;
+load();
+setInterval(load, CONFIG.REFRESH_SECONDS * 1000);
+setInterval(() => { if (DATA) renderMeta(); }, 30000);
+</script></body></html>
