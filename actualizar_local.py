@@ -6,6 +6,7 @@ Uso:
   python actualizar_local.py              # regenera y publica (si hay cambios)
   python actualizar_local.py --no-push    # solo regenera (prueba)
   python actualizar_local.py --loop 15    # repite cada 15 minutos hasta Ctrl+C
+  python actualizar_local.py --anonimizar # reemplaza sellers y usuarios por codigos antes de publicar (opcional)
 
 Requisitos: credenciales de gcloud (gcloud auth application-default login) y sesion de gh (gh auth login).
 El CD y las zonas se controlan con las variables WAREHOUSE y ZONES (por defecto CLRM04 y RS,RK,BL).
@@ -59,13 +60,18 @@ def once(push):
     if not all([generate(s) for s in steps]):
         log("Fallo algun paso: no se publica nada")
         return 1
-    # El sitio es publico: sellers y usuarios se reemplazan por codigos ANTES de publicar. Si falla, no se publica nada.
-    a = run([sys.executable, "anonimizar_datos.py"])
-    for line in (a.stdout or "").strip().splitlines():
-        log(line.strip())
-    if a.returncode != 0:
-        log("ERROR al anonimizar: no se publica nada")
-        return 1
+    # Decision vigente (nov-2026): el tablero publica sellers y numeros de usuario REALES, visibles para cualquiera con el
+    # link. Para volver a ocultarlos, ejecutar con --anonimizar: reemplaza sellers y usuarios por codigos antes de publicar y,
+    # si algo falla, no publica nada.
+    if "--anonimizar" in sys.argv:
+        a = run([sys.executable, "anonimizar_datos.py"])
+        for line in (a.stdout or "").strip().splitlines():
+            log(line.strip())
+        if a.returncode != 0:
+            log("ERROR al anonimizar: no se publica nada")
+            return 1
+    else:
+        log("Datos publicados SIN anonimizar (sellers y usuarios reales). Usa --anonimizar para ocultarlos.")
     if not push:
         return 0
     run(["git", "add", "data/"])

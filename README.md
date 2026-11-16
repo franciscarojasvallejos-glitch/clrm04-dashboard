@@ -18,6 +18,12 @@ No incluye la pestaña *Sugerencias de guardado*: sus reglas son de CLRM03 y par
 
 Requiere `gcloud auth application-default login` y `gh auth login`.
 
+## Visibilidad de sellers y usuarios
+El tablero es público y muestra los **sellers y números de usuario reales** del putaway y el check-in. Para ocultarlos
+(reemplazarlos por códigos estables `SELLER-xxxxxx` / `USR-xxxxxx` antes de publicar):
+
+    python actualizar_local.py --anonimizar
+
 ## Otro CD o zonas
     set WAREHOUSE=CLRM03 & set ZONES=RK,BL & python actualizar_local.py --no-push
 
