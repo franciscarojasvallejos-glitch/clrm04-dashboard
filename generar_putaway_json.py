@@ -1,0 +1,248 @@
+#!/usr/bin/env python3
+"""
+generar_putaway_json.py
+Genera data/putaway_CLRM03.json con los movables pendientes de guardar
+en CLRM03, directo desde BT_FBM_PUTAWAY.
+PW_STATUS: WAITING_START = pendiente, WAITING_FINISH = en proceso
+"""
+import json, os, sys, io, time
+from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
+from google.cloud import bigquery
+
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
+PROJECT  = 'meli-bi-data'
+WH       = os.environ.get('WAREHOUSE', 'CLRM04')
+BASE     = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE, 'data')
+OUT_FILE = os.path.join(DATA_DIR, f'putaway_{WH}.json')
+WMS_FILE = os.path.join(DATA_DIR, 'wms_totes_completo.json')
+
+SLA_WARN    = 48 * 60  # SLA pickup: 48h desde primer checkin (oldest_chk)
+SLA_WARN_FTL = 72 * 60  # SLA FTL:    72h desde arrival_dt
+STALE_DAYS  = 7         # pendiente sin actualizar hace mas de N dias y sin stock = posible dato desactualizado
+
+def load_wms_expire():
+    """Carga expire_at_date real de WMS por movable (retorna UTC-aware datetimes)."""
+    if not os.path.exists(WMS_FILE):
+        return {}
+    with open(WMS_FILE, encoding='utf-8') as f:
+        data = json.load(f)
+    lookup = {}
+    for t in data:
+        mov = t.get('movable', '')
+        exp = t.get('expire_at_date', '')
+        if mov and exp:
+            try:
+                dt = datetime.fromisoformat(exp.replace('+0000', '+00:00'))
+                lookup[mov] = dt.astimezone(ZoneInfo('America/Santiago')).replace(tzinfo=None)  # Santiago naive
+            except Exception:
+                pass
+    return lookup
+
+def generate():
+    now  = datetime.now(tz=ZoneInfo('America/Santiago'))
+    now_utc   = datetime.now(tz=timezone.utc).replace(tzinfo=None)  # UTC naive
+    now_naive = now.replace(tzinfo=None)                              # Chile local — para mins_en_proceso
+    desde = (now - timedelta(days=365)).strftime('%Y-%m-%d')
+
+    wms_expire = load_wms_expire()
+    print(f"  WMS expire_at cargado: {len(wms_expire)} movables", flush=True)
+
+    print(f"[{now.strftime('%H:%M:%S')}] Generando putaway pendiente {WH}...", flush=True)
+    client = bigquery.Client(project=PROJECT)
+
+    # Paso 1: movables pendientes desde BT_FBM_PUTAWAY
+    q = f"""
+    SELECT
+      pw.ADDRESS_FROM                   AS movable,
+      CAST(pw.SOURCE_PROCESS_ID AS STRING) AS is_id,
+      pw.PW_STATUS,
+      pw.FBM_USER_ID                    AS usuario,
+      pw.AUD_INS_DT                     AS pw_created,
+      pw.PW_CREATED_DATETIME            AS pw_created_dt,
+      pw.PW_UPDATED_DATETIME            AS pw_updated_dt,
+      COUNT(*)                          AS pw_items
+    FROM `{PROJECT}.WHOWNER.BT_FBM_PUTAWAY` pw
+    WHERE pw.WAREHOUSE_ID = '{WH}'
+      AND pw.AUD_INS_DT  >= '{desde}'
+      AND pw.PW_STATUS IN ('WAITING_START', 'WAITING_STORAGE_TO', 'WAITING_FINISH')
+    GROUP BY 1,2,3,4,5,6,7
+    ORDER BY pw.AUD_INS_DT ASC
+    """
+
+    print("  Consultando movables...", flush=True)
+    rows = list(client.query(q).result())
+    print(f"  {len(rows):,} movables pendientes", flush=True)
+
+    # Paso 2: enriquecer con datos IS desde BT_FBM_INBOUND_OPERATION
+    is_ids = list({r.is_id for r in rows if r.is_id})
+    is_data = {}
+    # Antes solo se enriquecian los primeros 500 IS: el resto quedaba sin seller/SKUs y con el SLA calculado
+    # desde la fecha del putaway en vez del primer check-in. Ahora se procesan todos, en lotes de 500.
+    for i in range(0, len(is_ids), 500):
+        ids_str = ','.join(f"'{x}'" for x in is_ids[i:i+500])
+        q2 = f"""
+        SELECT
+          CAST(op.INBOUND_ID AS STRING)         AS is_id,
+          ANY_VALUE(op.INB_APPOINTMENT_DATETIME) AS appointment_dt,
+          ANY_VALUE(op.INB_ARRIVAL_DATETIME)     AS arrival_dt,
+          ANY_VALUE(op.INB_SHIPMENT_TYPE)        AS shipment_type,
+          ANY_VALUE(op.CUS_NICKNAME)             AS seller,
+          COUNT(DISTINCT op.INVENTORY_ID)        AS sku_count,
+          SUM(COALESCE(op.CHKU_UNITS_OK,0)+COALESCE(op.CHKU_UNITS_DAMAGED,0)) AS qty_checkin,
+          MIN(op.CHK_CREATED_DATETIME)           AS oldest_chk,
+          ARRAY_AGG(DISTINCT op.INVENTORY_ID LIMIT 100) AS sku_list
+        FROM `{PROJECT}.WHOWNER.BT_FBM_INBOUND_OPERATION` op
+        WHERE op.WAREHOUSE_ID = '{WH}'
+          AND op.SIT_SITE_ID  = 'MLC'
+          AND CAST(op.INBOUND_ID AS STRING) IN ({ids_str})
+        GROUP BY 1
+        """
+        print(f"  Enriqueciendo con datos IS (lote {i//500 + 1}, {len(is_ids[i:i+500])} IS)...", flush=True)
+        for r2 in client.query(q2).result():
+            is_data[r2.is_id] = r2
+
+    def fmt(dt):
+        if dt is None: return None
+        if isinstance(dt, datetime):
+            return dt.strftime('%Y-%m-%d %H:%M')
+        return str(dt)[:16].replace('T', ' ')
+
+    # Paso 3: stock actual en cada movable. Un putaway pendiente SIN actualizar hace >STALE_DAYS dias
+    # y con la ubicacion vacia es casi seguro un registro que nunca se cerro (no hay nada que guardar).
+    movs = sorted({r.movable for r in rows if r.movable})
+    stock_by_mov = {}
+    for i in range(0, len(movs), 4000):
+        q_stk = f"""
+        SELECT ADDRESS_ID, SUM(FBM_QUANTITY) AS qty
+        FROM `{PROJECT}.WHOWNER.BT_FBM_STOCK_3_ADDRESS`
+        WHERE WAREHOUSE_ID = '{WH}' AND FBM_STOCK_STATUS = 'ok' AND ADDRESS_ID IN UNNEST(@movs)
+        GROUP BY ADDRESS_ID
+        """
+        cfg = bigquery.QueryJobConfig(query_parameters=[bigquery.ArrayQueryParameter('movs', 'STRING', movs[i:i+4000])])
+        for r3 in client.query(q_stk, job_config=cfg).result():
+            stock_by_mov[r3.ADDRESS_ID] = int(r3.qty or 0)
+    print(f"  Stock consultado para {len(movs)} movables ({len(stock_by_mov)} con stock)", flush=True)
+
+    items = []
+    for r in rows:
+        is_nt = '-NT-' in (r.movable or '')
+        inb   = is_data.get(r.is_id, None)
+
+        # Todos los datetimes de BQ (PW_CREATED_DATETIME, CHK_CREATED_DATETIME) están en hora Santiago.
+        # now_naive también es Santiago → comparar directamente sin conversión UTC.
+        pw_dt = r.pw_created_dt
+        if pw_dt:
+            pw_naive = pw_dt.replace(tzinfo=None) if isinstance(pw_dt, datetime) else datetime.fromisoformat(str(pw_dt)).replace(tzinfo=None)
+            mins_en_proceso = int((now_naive - pw_naive).total_seconds() / 60)
+
+            # Deadline SLA:
+            #   pickup: oldest_chk + 48h (MIN CHK_CREATED_DATETIME)
+            #   ftl:    arrival_dt  + 72h (oldest_chk no disponible en BQ para FTL)
+            #   fallback: pw_naive + 48h
+            shipment = (inb.shipment_type or '') if inb else ''
+            wms_deadline = wms_expire.get(r.movable)  # Santiago naive si existe
+            if wms_deadline:
+                deadline = wms_deadline
+                wms_exact = True
+            elif inb and inb.oldest_chk:
+                chk_naive = inb.oldest_chk.replace(tzinfo=None) if isinstance(inb.oldest_chk, datetime) else datetime.fromisoformat(str(inb.oldest_chk)).replace(tzinfo=None)
+                deadline = chk_naive + timedelta(minutes=SLA_WARN)
+                wms_exact = False
+            elif inb and inb.arrival_dt and shipment == 'ftl':
+                arr_naive = inb.arrival_dt.replace(tzinfo=None) if isinstance(inb.arrival_dt, datetime) else datetime.fromisoformat(str(inb.arrival_dt)).replace(tzinfo=None)
+                deadline = arr_naive + timedelta(minutes=SLA_WARN_FTL)
+                wms_exact = False
+            else:
+                deadline = pw_naive + timedelta(minutes=SLA_WARN)
+                wms_exact = False
+
+            mins_restantes = int((deadline - now_naive).total_seconds() / 60)
+            sla = 'over' if mins_restantes < 0 else ('warn' if mins_restantes < 120 else 'ok')
+        else:
+            pw_naive = None
+            mins_en_proceso = None
+            mins_restantes = None
+            sla = 'unknown'
+            wms_exact = False
+            deadline = None
+
+        mins_since = mins_en_proceso  # alias para compatibilidad con dashboard
+
+        upd_dt = r.pw_updated_dt
+        upd_naive = (upd_dt.replace(tzinfo=None) if isinstance(upd_dt, datetime)
+                     else datetime.fromisoformat(str(upd_dt)).replace(tzinfo=None)) if upd_dt else None
+        dias_sin_act = (now_naive - upd_naive).days if upd_naive else None
+        stock_hoy = stock_by_mov.get(r.movable or '', 0)
+        stale = bool(dias_sin_act is not None and dias_sin_act > STALE_DAYS and stock_hoy == 0)
+
+        items.append({
+            'movable':        r.movable or '',
+            'is_id':          r.is_id or '',
+            'is_nt':          is_nt,
+            'pw_status':      r.PW_STATUS or '',
+            'usuario':        str(r.usuario or ''),
+            'pw_items':       int(r.pw_items or 0),
+            'shipment_type':  inb.shipment_type if inb else '',
+            'seller':         inb.seller if inb else '',
+            'sku_count':      int(inb.sku_count or 0) if inb else 0,
+            'qty_checkin':    int(inb.qty_checkin or 0) if inb else 0,
+            'skus':           list(inb.sku_list or []) if inb else [],
+            'appointment':    fmt(inb.appointment_dt) if inb else None,
+            'arrival':        fmt(inb.arrival_dt) if inb else None,
+            'pw_created':     fmt(r.pw_created_dt),
+            # offset real de Santiago (-03:00 en verano, -04:00 en invierno); antes iba fijo en -04:00
+            'expire_at_date': deadline.replace(tzinfo=ZoneInfo('America/Santiago')).isoformat(timespec='seconds') if deadline else None,
+            'ult_actualiz':   fmt(upd_dt),
+            'dias_sin_actualizar': dias_sin_act,
+            'stock_hoy':      stock_hoy,
+            'stale':          stale,
+            'mins_en_proceso': mins_en_proceso,
+            'mins_since_chk': mins_since,
+            'mins_restantes': mins_restantes,
+            'sla':            sla,
+            'wms_exact':      wms_exact,
+        })
+
+    stale_n  = sum(1 for x in items if x['stale'])
+    activos  = [x for x in items if not x['stale']]
+    nt_movs  = sum(1 for x in activos if x['is_nt'])
+    over_sla = sum(1 for x in activos if x['sla'] == 'over')   # los desactualizados no cuentan como vencidos
+    print(f"  {len(items)} movables ({stale_n} posibles datos desactualizados) · {nt_movs} NT · {over_sla} sobre SLA", flush=True)
+
+    os.makedirs(DATA_DIR, exist_ok=True)
+    out = {
+        'updated':   now.strftime('%Y-%m-%d %H:%M'),
+        'warehouse': WH,
+        'total':     len(items),
+        'stale_count': stale_n,
+        'stale_days':  STALE_DAYS,
+        'nt_count':  nt_movs,
+        'over_sla':  over_sla,
+        'movables':  items,
+    }
+    with open(OUT_FILE, 'w', encoding='utf-8') as f:
+        json.dump(out, f, separators=(',', ':'), ensure_ascii=False)
+    kb = os.path.getsize(OUT_FILE) / 1024
+    print(f"  Guardado: {OUT_FILE} ({kb:.0f} KB)", flush=True)
+
+def main():
+    args  = sys.argv[1:]
+    watch = '--watch' in args
+    interval = 3600
+    if watch:
+        idx = args.index('--watch')
+        try: interval = int(args[idx+1])
+        except: pass
+        print(f"Modo watch — cada {interval}s. Ctrl+C para detener.", flush=True)
+        while True:
+            try: generate()
+            except Exception as e: print(f"  ERROR: {e}", flush=True)
+            time.sleep(interval)
+    else:
+        generate()
+
+if __name__ == '__main__':
+    main()

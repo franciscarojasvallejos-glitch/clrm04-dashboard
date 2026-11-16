@@ -1,207 +1,3125 @@
-<!DOCTYPE html>
-<html lang="es"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Ocupación CLRM04</title>
 <style>
-  :root{--y:#FFE600;--yd:#E6CF00;--tx:#333;--mu:#666;--bd:#D9D9D9;--g:#00A650;--o:#FFB020;--o2:#E07020;--r:#F23D4F;--e:#E6E6E6}
-  *{box-sizing:border-box}
-  body{margin:0;font-family:"Segoe UI",Arial,sans-serif;color:var(--tx);background:#fff;font-size:13px}
-  #hdr{background:var(--y);border-bottom:2px solid var(--yd);padding:8px 14px;display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center}
-  #hdr h1{font-size:16px;margin:0}
-  .meta{font-size:11px;color:#555}
-  .kpis{display:flex;flex-wrap:wrap;gap:4px 16px;margin-left:auto}
-  .k{text-align:center;min-width:56px}.k b{display:block;font-size:20px;line-height:1.1}.k span{font-size:9px;color:#555;text-transform:uppercase}
-  #banner{display:none;padding:5px 14px;font-size:12px;font-weight:600;text-align:center}
-  #banner.warn{display:block;background:var(--o);color:#333}#banner.bad{display:block;background:var(--r);color:#fff}
-  #tabs{display:flex;gap:2px;padding:8px 14px 0;border-bottom:1px solid var(--bd);flex-wrap:wrap}
-  .tab{border:1px solid var(--bd);border-bottom:none;background:#f5f5f5;padding:6px 14px;cursor:pointer;border-radius:6px 6px 0 0;font-size:12px}
-  .tab.on{background:#fff;font-weight:700;border-color:#999;box-shadow:inset 0 3px 0 var(--y)}
-  .tab small{color:var(--mu);font-weight:400;margin-left:6px}
-  #bar{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;padding:8px 14px;background:#fafafa;border-bottom:1px solid var(--bd);font-size:11px}
-  #bar input{border:1px solid var(--bd);border-radius:4px;padding:4px 8px;font-size:12px;width:230px;font-family:Consolas,monospace}
-  .leg i{display:inline-block;width:11px;height:11px;margin:0 4px 0 12px;vertical-align:-1px;border-radius:2px}
-  #hits{padding:0 14px;font-size:11px;color:var(--mu)}
-  #hits button{font:inherit;font-family:Consolas,monospace;margin:2px 4px 2px 0;padding:1px 6px;border:1px solid var(--bd);border-radius:10px;background:#fff;cursor:pointer}
-  #map{padding:10px 14px 24px}
-  .aisle{margin-bottom:14px;border:1px solid var(--bd);border-radius:6px;background:#fff}
-  .ah{display:flex;gap:12px;align-items:center;padding:4px 10px;background:#f5f5f5;border-bottom:1px solid var(--bd);border-radius:6px 6px 0 0;font-size:11px}
-  .ah b{font-size:12px}.ah .bar{flex:0 0 120px;height:6px;background:var(--e);border-radius:3px;overflow:hidden}.ah .bar div{height:100%;background:var(--g)}
-  .scroll{overflow-x:auto;padding:8px 10px}
-  .bays{display:flex;gap:6px;align-items:flex-end;width:max-content}
-  .bay{display:flex;flex-direction:column;align-items:center}
-  .bay .bn{font-size:8px;color:#888;margin-top:2px}
-  .lv{display:flex;gap:1px;margin-bottom:1px}
-  .c{width:8px;height:8px;border-radius:1px;background:var(--e);cursor:pointer}
-  .n1{background:var(--g)}.n2{background:var(--o)}.n3{background:var(--o2)}.n4{background:var(--r)}
-  .c.hit{outline:2px solid #1565c0;outline-offset:1px;position:relative;z-index:2}
-  .floor{display:flex;flex-wrap:wrap;gap:2px;max-width:100%}
-  .floor .c{width:11px;height:11px}
-  #det{position:sticky;bottom:0;background:#fffbe0;border-top:2px solid var(--yd);padding:6px 14px;font-size:12px;display:none}
-  #det code{background:#fff;padding:1px 5px;border-radius:3px}
-</style></head><body>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#EBEBEB;color:#333333;font-family:'Inter',system-ui,-apple-system,sans-serif;font-size:12px;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+#hdr{display:flex;align-items:center;gap:10px;padding:6px 12px;background:#FFE600;border-bottom:2px solid #E6CF00;flex-shrink:0;flex-wrap:wrap}
+h1{font-size:13px;font-weight:700;color:#333333;white-space:nowrap}
+.hmeta{font-size:9px;color:#999999}
+#btnRef{background:none;border:1px solid #D9D9D9;border-radius:4px;color:#666666;cursor:pointer;font-size:12px;padding:2px 6px}
+#btnRef:hover{color:#3483FA}
+#btnRef.spin{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#autoref{display:flex;align-items:center;gap:5px;font-size:10px;color:#666666;padding:3px 8px;background:#F5F5F5;border:1px solid #D9D9D9;border-radius:5px;cursor:pointer;user-select:none}
+#autoref.active{border-color:#00A65066;color:#00A650}
+#ref-cd{font-weight:700;min-width:18px;text-align:right}
+#kpis{margin-left:auto;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.hsep{width:1px;height:28px;background:#D9D9D9}
+.kv{font-size:17px;font-weight:700;text-align:center;min-width:36px}
+.kl{font-size:9px;color:#666666;text-transform:uppercase;letter-spacing:.5px;text-align:center}
+.c-blue{color:#3483FA}.c-ok{color:#00A650}.c-warn{color:#F5A623}.c-bad{color:#F23D4F}
+#sbar{display:flex;gap:10px;padding:3px 12px;background:#FFFFFF;border-bottom:1px solid #D9D9D9;font-size:9px;color:#999999;flex-shrink:0}
+#main{display:flex;flex:1;overflow:hidden}
+#mapwrap{flex:1;overflow:auto;padding:8px 12px}
+#det{width:280px;flex-shrink:0;background:#FFFFFF;border-left:1px solid #D9D9D9;overflow-y:auto;display:flex;flex-direction:column}
+#det-hdr{padding:8px 10px;font-size:11px;font-weight:700;color:#3483FA;border-bottom:1px solid #D9D9D9;position:sticky;top:0;background:#FFFFFF;z-index:1}
+#det-body{padding:8px;flex:1}
+.zone-section{margin-bottom:6px}
+.zone-hdr{display:flex;align-items:center;gap:6px;padding:3px 6px;background:#F5F5F5;border:1px solid #D9D9D9;border-radius:4px;cursor:pointer;user-select:none;font-size:10px;font-weight:700}
+.zone-hdr:hover{background:#D9D9D9}
+.zone-body{overflow:hidden}
+.zone-body-inner{padding:4px 0}
+.aisle-filter-bar{display:flex;align-items:center;flex-wrap:wrap;gap:3px;padding:4px 6px;border-bottom:1px solid #F0F0F0;margin-bottom:4px}
+.fam-legend{display:flex;align-items:center;flex-wrap:wrap;gap:5px;padding:4px 6px 6px;font-size:9px}
+.fam-title{color:#666666;font-weight:700;margin-right:2px}
+.fam-chip{border:1px solid;border-radius:10px;padding:1px 7px;background:#FFFFFF;white-space:nowrap}
+.aisle-chip{padding:1px 6px;font-size:9px;font-family:monospace;border:1px solid #D9D9D9;border-radius:10px;background:#FFFFFF;color:#666666;cursor:pointer;white-space:nowrap;transition:all .12s}
+.aisle-chip:hover{border-color:#3483FA;color:#3483FA}
+.aisle-chip.on{background:#3483FA;border-color:#3483FA;color:#FFFFFF;font-weight:700}
+.aisle-chip-all{padding:1px 8px;font-size:9px;border:1px solid #999999;border-radius:10px;background:#F5F5F5;color:#666666;cursor:pointer;font-weight:700}
+.aisle-chip-all:hover{background:#E0E0E0}
+.zone-section.collapsed .zone-body{display:none}
+.zone-scroll{overflow-x:auto;overflow-y:hidden;padding-bottom:4px}
+.bay-axis-row{display:flex;align-items:flex-end;height:14px;margin-bottom:1px}
+.axis-lbl-spacer{width:62px;flex-shrink:0}
+.axis-inner{display:grid;position:relative;flex:1}
+.axis-tick{font-size:7px;color:#999999;text-align:center}
+.aisle-row{display:flex;align-items:center;margin-bottom:1px}
+.aisle-lbl{width:62px;flex-shrink:0;font-size:8px;color:#999999;text-align:right;padding-right:7px;font-family:monospace;position:sticky;left:0;background:#EBEBEB;z-index:1}
+.bay-grid{display:grid;gap:1px}
+.bc{border-radius:1px;cursor:pointer;transition:filter .07s;aspect-ratio:1/1;min-width:10px;min-height:10px}
+.bc:hover{filter:brightness(1.6);outline:1px solid rgba(255,255,255,.35);position:relative;z-index:2}
+.bc.sel{outline:2px solid #fff;filter:brightness(1.4);position:relative;z-index:3}
+.bc.empty{background:#E8E8E8 !important;cursor:default}
+.bc.empty:hover{filter:none;outline:none}
+.bc.empty.bl-empty{background:#3483FA !important;cursor:pointer}
+.bc.empty.bl-empty:hover{filter:brightness(1.4)!important;outline:1px solid rgba(88,166,255,.4)!important;position:relative;z-index:2}
+.bc.wms-gap{background:transparent!important;cursor:default;pointer-events:none}
+.rk-bc{display:flex;flex-direction:row;gap:1px;padding:0;background:#EBEBEB;border-radius:1px;cursor:pointer;overflow:hidden}
+.rk-bc:hover .bc-pos{filter:brightness(1.6)}
+.rk-bc.sel .bc-pos{filter:brightness(1.4)}
+.bc-pos{flex:1;min-width:3px;transition:filter .07s}
+.bc-pos.ocp:hover{filter:brightness(1.9)!important;outline:1px solid rgba(255,255,255,.5);position:relative;z-index:2}
+.bc-pos.emp{background:#E8E8E8}
+.bc-pos.gap{background:transparent}
+.bl-section{margin-bottom:6px}
+.bl-tabs{display:flex;gap:4px;margin-bottom:6px;flex-wrap:wrap}
+.bl-tab-btn{background:#F5F5F5;border:1px solid #D9D9D9;border-radius:4px;color:#666666;cursor:pointer;font-size:10px;font-weight:600;padding:3px 10px;transition:all .15s}
+.rank-sort-btn{background:#F5F5F5;border:1px solid #D9D9D9;border-radius:4px;color:#666666;cursor:pointer;font-size:9px;padding:2px 8px;transition:all .15s}
+.rank-sort-btn:hover{background:#D9D9D9}
+.rank-sort-on{background:#3483FA18;border-color:#3483FA;color:#3483FA;font-weight:700}
+.bl-tab-btn:hover{background:#D9D9D9}
+.bl-tab-active{background:#D9D9D9;border-color:currentColor}
+.bl-tab-content{padding:2px 0}
+#tip{position:fixed;background:#FFFFFF;border:1px solid #D9D9D9;border-radius:6px;padding:8px 10px;font-size:10px;pointer-events:none;z-index:100;display:none;min-width:160px;box-shadow:0 4px 16px #0008}
+#tip.vis{display:block}
+.tr{display:flex;justify-content:space-between;gap:12px;margin-bottom:2px}
+.tl{color:#666666}.tv{color:#333333;font-weight:600;text-align:right}
+.det-bay{font-family:monospace;font-size:9px;color:#3483FA;margin-bottom:4px}
+.det-stat{font-size:10px;color:#666666;margin-bottom:8px;line-height:1.5}
+.det-stat b{color:#333333}
+.slot-card{background:#EBEBEB;border:1px solid #F5F5F5;border-radius:5px;padding:6px 8px;margin-bottom:4px}
+.slot-addr{font-size:9px;color:#3483FA88;font-family:monospace;margin-bottom:3px}
+.occ-bar{height:4px;background:#D9D9D9;border-radius:2px;overflow:hidden;margin-bottom:3px}
+.occ-fill{height:100%;border-radius:2px}
+.sku-chip{font-size:8px;padding:1px 5px;border-radius:3px;background:#2968C822;color:#3483FA;border:1px solid #2968C844;font-family:monospace}
+.prod-resp{font-size:8px;color:#666666;display:flex;align-items:center;gap:3px;margin-top:2px;border-top:1px solid #F5F5F5;padding-top:2px}
+.prod-resp .ruser{color:#F5A623;font-weight:600;font-family:monospace}
+.prod-resp .rdate{color:#999999}
+.prod-title{font-size:9px;font-weight:600;color:#333333;margin-bottom:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prod-meta{font-size:8px;color:#666666}
+.prod-row{display:flex;gap:6px;align-items:flex-start}
+.prod-img{width:44px;height:44px;object-fit:contain;border-radius:3px;background:#EBEBEB;flex-shrink:0;border:1px solid #D9D9D9}
+.prod-info{flex:1;min-width:0}
+/* ── Dashboard tabs ──────────────────────────────────────────────────────── */
+#dash-tabs{background:#FFFFFF;border-bottom:1px solid #D9D9D9;box-shadow:0 1px 4px rgba(0,0,0,.08);display:flex;flex-shrink:0}
+.dash-tab{background:none;border:none;border-bottom:2px solid transparent;color:#666666;cursor:pointer;font-size:11px;font-weight:700;padding:7px 18px;letter-spacing:.3px;text-transform:uppercase;transition:all .15s}
+.dash-tab:hover{color:#333333;background:#F5F5F5}
+.dash-tab.active{color:#3483FA;border-bottom-color:#3483FA}
+.dash-tab.tab-sug.active{color:#F5A623;border-bottom-color:#F5A623}
+#mapa-view{flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+#sug-view{flex:1;overflow:hidden;display:none;flex-direction:column;background:#EBEBEB;min-height:0}
+/* ── Sugerencias panel ─────────────────────────────────────────────────── */
+#sug-search-bar{background:#FFFFFF;border-bottom:1px solid #D9D9D9;padding:8px 16px;display:flex;gap:8px;align-items:center;flex-shrink:0;flex-wrap:wrap}
+#sug-input{flex:1;min-width:200px;max-width:380px;background:#F5F5F5;border:1px solid #D9D9D9;color:#333333;font-size:11px;padding:5px 10px;border-radius:4px;outline:none;font-family:monospace}
+#sug-input:focus{border-color:#F5A623}
+#sug-input::placeholder{color:#999999;font-family:system-ui}
+#btn-sug-buscar{background:#3483FA;border:none;color:#FFFFFF;font-size:10px;font-weight:700;padding:5px 14px;border-radius:4px;cursor:pointer}
+#btn-sug-buscar:hover{background:#2968C8}
+#sug-body{flex:1;overflow:hidden;display:flex;gap:0}
+#sug-sku-list{width:300px;flex-shrink:0;border-right:1px solid #D9D9D9;overflow-y:auto;display:flex;flex-direction:column}
+#sug-sku-list::-webkit-scrollbar{width:4px}#sug-sku-list::-webkit-scrollbar-thumb{background:#D9D9D9}
+#sug-results{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:8px}
+#sug-results::-webkit-scrollbar{width:4px}#sug-results::-webkit-scrollbar-thumb{background:#D9D9D9}
+.sug-sku-item{padding:7px 12px;border-bottom:1px solid #FFFFFF;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .1s}
+.sug-sku-item:hover{background:#FFFFFF}
+.sug-sku-item.sel{background:#F5F5F5;border-left:2px solid #F5A623}
+.sug-sku-inv{font-family:monospace;font-size:10px;color:#3483FA;white-space:nowrap}
+.sug-sku-name{font-size:10px;color:#333333;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.sug-sku-locs{font-size:9px;color:#999999;white-space:nowrap}
+.sug-result-card{background:#FFFFFF;border:1px solid #D9D9D9;border-radius:6px;overflow:hidden;transition:border-color .1s}
+.sug-result-card:hover{border-color:#999999}
+.sug-result-hdr{padding:8px 12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sug-result-addr{font-family:monospace;font-size:12px;font-weight:700;color:#333333}
+.sug-result-zona{font-size:9px;color:#999999;background:#F5F5F5;padding:1px 6px;border-radius:3px}
+.sug-afinidad{font-size:12px;margin-left:auto}
+.sug-reasons{padding:4px 12px 6px 12px;display:flex;flex-wrap:wrap;gap:4px}
+.sug-tag{font-size:9px;padding:2px 8px;border-radius:10px;font-weight:600}
+.sug-tag-exact{background:#E6F7EE;color:#00A650}
+.sug-tag-dom{background:#EBF2FF;color:#3483FA}
+.sug-tag-brand{background:#FEF3E2;color:#F5A623}
+.sug-tag-space{background:#F5F5F5;color:#666666}
+.sug-tag-warn{background:#FDECEA;color:#F23D4F}
+.sug-bars{padding:4px 12px 8px 12px;display:flex;gap:16px;align-items:flex-start;font-size:9px;color:#666666;flex-wrap:wrap}
+.sug-bar-wrap{display:flex;flex-direction:column;gap:2px;min-width:80px}
+.sug-bar-lbl{display:flex;justify-content:space-between;gap:6px}
+.sug-bar{height:4px;background:#F5F5F5;border-radius:2px;overflow:hidden;margin-top:1px}
+.sug-bar-fill{height:100%;border-radius:2px}
+#sug-empty{text-align:center;color:#999999;padding:40px 20px;font-size:12px;line-height:1.8}
+#sug-sku-hdr{padding:6px 12px;font-size:9px;color:#999999;border-bottom:1px solid #F5F5F5;background:#EBEBEB;position:sticky;top:0;z-index:1;display:flex;justify-content:space-between}
+.sug-score-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:#F5F5F5;color:#F5A623;margin-left:auto;white-space:nowrap}
+/* ── Inventario SKU tab ──────────────────────────────────────────────────── */
+#inv-view{flex:1;overflow:hidden;display:none;flex-direction:column;background:#EBEBEB;min-height:0}
+#inv-toolbar{background:#FFFFFF;border-bottom:1px solid #D9D9D9;padding:8px 16px;display:flex;gap:8px;align-items:center;flex-shrink:0;flex-wrap:wrap}
+#inv-search{flex:1;min-width:180px;max-width:340px;background:#F5F5F5;border:1px solid #D9D9D9;color:#333333;font-size:11px;padding:5px 10px;border-radius:4px;outline:none;font-family:monospace}
+#inv-search:focus{border-color:#3483FA}
+#inv-search::placeholder{color:#999999;font-family:system-ui}
+.inv-filter-btn{background:none;border:1px solid #D9D9D9;color:#666666;font-size:10px;font-weight:600;padding:4px 10px;border-radius:4px;cursor:pointer;transition:all .15s}
+.inv-filter-btn:hover{background:#F5F5F5}
+.inv-filter-btn.on{background:#F5F5F5;color:#3483FA;border-color:#3483FA}
+.inv-filter-btn.on.rk{color:#00A650;border-color:#00A650;background:#E6F7EE}
+.inv-filter-btn.on.bl{color:#3483FA;border-color:#3483FA;background:#EBF2FF}
+#inv-count{font-size:9px;color:#999999;margin-left:auto}
+#inv-body{flex:1;overflow:hidden;display:flex;gap:0;min-height:0}
+#inv-table-wrap{flex:1;overflow-y:auto;display:flex;flex-direction:column;min-height:0}
+#inv-table-wrap::-webkit-scrollbar{width:5px}#inv-table-wrap::-webkit-scrollbar-thumb{background:#D9D9D9}
+#inv-detail{width:310px;flex-shrink:0;border-left:1px solid #D9D9D9;overflow-y:auto;display:flex;flex-direction:column;background:#FFFFFF}
+#inv-detail::-webkit-scrollbar{width:4px}#inv-detail::-webkit-scrollbar-thumb{background:#D9D9D9}
+#inv-tbl{width:100%;border-collapse:collapse;font-size:10px}
+#inv-tbl thead{position:sticky;top:0;z-index:2;background:#F5F5F5}
+#inv-tbl th{padding:5px 10px;text-align:left;font-size:9px;font-weight:700;background:#F5F5F5;color:#666666;border-bottom:2px solid #D9D9D9;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;cursor:pointer;user-select:none}
+#inv-tbl th:hover{color:#333333}
+#inv-tbl th.sort-asc::after{content:' ▲';font-size:8px}
+#inv-tbl th.sort-desc::after{content:' ▼';font-size:8px}
+#inv-tbl td{padding:5px 10px;border-bottom:1px solid #F5F5F5;vertical-align:middle}
+#inv-tbl tr:hover td{background:#F5F5F5}
+#inv-tbl tr.inv-sel td{background:#F5F5F5;border-left:2px solid #3483FA}
+.inv-sku{font-family:monospace;color:#3483FA;font-size:10px;white-space:nowrap}
+.inv-title{color:#333333;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.inv-brand{color:#666666;font-size:9px;white-space:nowrap}
+.inv-area-tag{font-size:8px;padding:1px 5px;border-radius:3px;font-weight:700;display:inline-block}
+.inv-area-rk{background:#E6F7EE;color:#00A650}
+.inv-area-bl{background:#EBF2FF;color:#3483FA}
+.inv-qty{font-weight:700;color:#F5A623}
+.inv-locs{color:#666666;font-size:9px;text-align:center}
+#inv-det-hdr{padding:10px 12px;font-size:11px;font-weight:700;color:#3483FA;border-bottom:1px solid #D9D9D9;position:sticky;top:0;background:#FFFFFF;z-index:1}
+#inv-det-body{padding:10px 12px;flex:1}
+.inv-loc-card{background:#EBEBEB;border:1px solid #F5F5F5;border-radius:5px;padding:6px 10px;margin-bottom:5px}
+.inv-loc-addr{font-family:monospace;font-size:10px;color:#3483FA;margin-bottom:3px;font-weight:700}
+.inv-loc-meta{font-size:9px;color:#666666;display:flex;gap:8px;flex-wrap:wrap}
+/* ── Check-in & Putaway tab ─────────────────────────────────────────────── */
+#chk-view{flex:1;overflow:hidden;display:none;flex-direction:column;background:#EBEBEB;min-height:0}
+#chk-toolbar{background:#FFFFFF;border-bottom:1px solid #D9D9D9;padding:7px 16px;display:flex;gap:10px;align-items:center;flex-shrink:0;flex-wrap:wrap}
+#chk-search{background:#F5F5F5;border:1px solid #D9D9D9;color:#333333;font-size:11px;padding:4px 10px;border-radius:4px;outline:none;font-family:monospace;width:220px}
+#chk-search:focus{border-color:#3483FA}
+.chk-filter-btn{background:none;border:1px solid #D9D9D9;color:#999999;font-size:10px;font-weight:600;padding:3px 10px;border-radius:4px;cursor:pointer;opacity:.5;transition:all .15s}
+.chk-filter-btn.on{opacity:1}
+.chk-filter-btn.on.f-pend{color:#F5A623;border-color:#F5A623;background:#F5A62318}
+.chk-filter-btn.on.f-over{color:#F23D4F;border-color:#F23D4F;background:#F23D4F18}
+.chk-filter-btn.on.f-done{color:#00A650;border-color:#00A650;background:#00A65018}
+.chk-filter-btn.on.f-nt{color:#3483FA;border-color:#3483FA;background:#3483FA18}
+#chk-kpis{margin-left:auto;display:flex;gap:12px;align-items:center}
+.chk-kpi{text-align:center}
+.chk-kv{font-size:15px;font-weight:700}
+.chk-kl{font-size:8px;color:#999999;text-transform:uppercase;letter-spacing:.4px}
+#chk-body{flex:1;overflow:hidden;display:flex;min-height:0}
+#chk-list{display:none}
+#chk-detail{flex:1;border-left:none;overflow-y:auto;background:#FFFFFF;display:flex;flex-direction:column}
+#chk-det-hdr{padding:10px 12px;font-size:11px;font-weight:700;border-bottom:1px solid #D9D9D9;position:sticky;top:0;background:#FFFFFF;z-index:1}
+#chk-det-body{padding:10px 12px;flex:1}
+#chk-tbl{width:100%;border-collapse:collapse;font-size:10px}
+#chk-tbl thead{position:sticky;top:0;z-index:2;background:#F5F5F5}
+#chk-tbl th{padding:5px 10px;text-align:left;font-size:9px;font-weight:700;background:#F5F5F5;color:#666666;border-bottom:2px solid #D9D9D9;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+#chk-tbl td{padding:5px 10px;border-bottom:1px solid #F5F5F5;vertical-align:middle}
+#chk-tbl tr:hover td{background:#F5F5F5}
+#chk-tbl tr.chk-sel td{background:#F5F5F5;border-left:2px solid #3483FA}
+.sla-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;white-space:nowrap}
+.sla-ok       {background:#E6F7EE;color:#00A650}
+.sla-warn     {background:#FEF3E2;color:#F5A623}
+.sla-over     {background:#FDECEA;color:#F23D4F;animation:chk-pulse 2s ease-in-out infinite}
+.sla-done     {background:#F5F5F5;color:#999999}
+.sla-unknown  {background:#F5F5F5;color:#999999}
+.sla-pw-active{background:#EBF2FF;color:#3483FA;animation:chk-pulse 2s ease-in-out infinite}
+@keyframes chk-pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.chk-sug-card{background:#EBEBEB;border:1px solid #F5F5F5;border-radius:5px;padding:6px 10px;margin-bottom:5px}
+.chk-sug-addr{font-family:monospace;font-size:10px;font-weight:700;color:#00A650}
+.chk-sug-meta{font-size:9px;color:#666666;display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
+#slot-modal.vis{display:flex!important}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:#EBEBEB}
+::-webkit-scrollbar-thumb{background:#CCCCCC;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#BBBBBB}
+</style>
+</head>
+<body>
 <div id="hdr">
-  <h1>&#11041; Ocupaci&oacute;n Ubicaciones &middot; <span id="whName">CLRM04</span></h1>
-  <div class="meta" id="meta">Cargando&hellip;</div>
-  <div class="kpis" id="kpis"></div>
+  <h1 style="color:#333333;font-weight:700">⬡ Ocupación Ubicaciones · CLRM04</h1>
+  <div class="hmeta">BT_FBM_STOCK_3_ADDRESS · actualizado <b id="hupd">—</b> &nbsp;<span id="sse-dot" title="Conexión en vivo" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#999999;vertical-align:middle;margin-right:3px"></span><span id="sse-lbl" style="font-size:9px;color:#999999">sin conexión</span></div>
+  <button id="btnRef" onclick="loadData()" title="Recargar">↺</button>
+  <div id="autoref" class="active" onclick="toggleAuto()" title="Auto-refresh cada 60s">
+    <span style="font-size:9px;opacity:.7">⏱</span> Auto <span id="ref-cd">60</span>s
+  </div>
+  <div id="kpis">
+    <div><div class="kv c-blue" id="k-slots">—</div><div class="kl">Ubic. Totales</div></div>
+    <div><div class="kv c-blue" id="k-bays">—</div><div class="kl">Ubic. Ocup.</div></div>
+    <div class="hsep"></div>
+    <div title="Ubicaciones con al menos 1 SKU / total ubicaciones"><div class="kv c-ok" id="k-pct">—</div><div class="kl">% Ocupación</div></div>
+    <div title="Ubicaciones con más de 1 SKU / ubicaciones ocupadas"><div class="kv c-warn" id="k-pct-multi">—</div><div class="kl">% Multi-SKU</div></div>
+    <div class="hsep"></div>
+    <div title="Ubicaciones con exactamente 1 SKU"><div class="kv c-ok" id="k-locs-1" style="font-size:13px">—</div><div class="kl">1 SKU</div></div>
+    <div title="Ubicaciones con 2 SKUs"><div class="kv c-warn" id="k-locs-2" style="font-size:13px">—</div><div class="kl">2 SKUs</div></div>
+    <div title="Ubicaciones con 3 SKUs"><div class="kv" id="k-locs-3" style="font-size:13px;color:#d07030">—</div><div class="kl">3 SKUs</div></div>
+    <div title="Ubicaciones con 4 o más SKUs"><div class="kv c-bad" id="k-locs-4p" style="font-size:13px">—</div><div class="kl">4+ SKUs</div></div>
+    <div class="hsep"></div>
+    <div><div class="kv" id="k-bl-over" style="color:#F23D4F">—</div><div class="kl">BL &gt;1 SKU</div></div>
+  </div>
 </div>
-<div id="banner"></div>
-<div id="tabs"></div>
-<div id="bar">
-  <input id="q" type="search" placeholder="Buscar ubicación o SKU…  ej: RS-0-108-017" autocomplete="off">
-  <span class="leg"><i style="background:var(--e)"></i>vac&iacute;a<i style="background:var(--g)"></i>1 SKU<i style="background:var(--o)"></i>2<i style="background:var(--o2)"></i>3<i style="background:var(--r)"></i>4+ SKUs</span>
-  <label class="meta"><input type="checkbox" id="onlyOcc" style="width:auto"> Solo pasillos con stock</label>
-  <span class="meta" id="zinfo"></span>
+<div id="fresh-banner" style="display:none;padding:4px 12px;font-size:11px;font-weight:600;text-align:center;flex-shrink:0"></div>
+<div id="dash-tabs">
+  <button class="dash-tab active" onclick="switchTab('mapa')">🗺️ Mapa de Ocupación</button>
+  <button class="dash-tab" onclick="switchTab('inv')">📦 Inventario SKU</button>
+  <button class="dash-tab" onclick="switchTab('chk')">📦 Putaway</button>
 </div>
-<div id="hits"></div>
-<div id="map"></div>
-<div id="det"></div>
+<div id="mapa-view">
+  <div id="sbar">
+    Zona: <span id="s-zone">—</span> &nbsp;|&nbsp;
+    Pasillo: <span id="s-aisle">—</span> &nbsp;|&nbsp;
+    Bay: <span id="s-bay">—</span> &nbsp;|&nbsp;
+    <span id="s-msg">Hover sobre el mapa</span>
+    <div style="margin-left:auto;position:relative;display:flex;align-items:center;gap:6px">
+      <input id="loc-search" type="text" placeholder="Buscar ubicación…  ej: RK-005-001" autocomplete="off"
+        style="background:#F5F5F5;border:1px solid #D9D9D9;color:#333333;font-size:10px;font-family:monospace;padding:3px 8px;border-radius:4px;outline:none;width:220px"
+        oninput="locSearchInput(this.value)" onkeydown="locSearchKey(event)">
+      <div id="loc-results" style="display:none;position:absolute;top:100%;right:0;z-index:500;background:#FFFFFF;border:1px solid #D9D9D9;border-radius:4px;min-width:300px;max-height:220px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.6);margin-top:2px"></div>
+    </div>
+  </div>
+  <div id="legend-bar" style="display:flex;align-items:center;gap:14px;padding:6px 10px;background:#F5F5F5;border:1px solid #D9D9D9;border-radius:6px;margin-bottom:6px;flex-wrap:wrap;font-size:10px;color:#333333">
+    <span style="font-weight:700;color:#666666;margin-right:2px">Nº SKUs por ubicación:</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:13px;height:13px;border-radius:2px;background:#E8E8E8;display:inline-block;border:1px solid #D9D9D9"></span>Vacía</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:13px;height:13px;border-radius:2px;background:#00A650;display:inline-block"></span>1 SKU</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:13px;height:13px;border-radius:2px;background:#F5A623;display:inline-block"></span>2 SKUs</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:13px;height:13px;border-radius:2px;background:#d07030;display:inline-block"></span>3 SKUs</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:13px;height:13px;border-radius:2px;background:#F23D4F;display:inline-block"></span>4+ SKUs</span>
+    <span style="width:1px;height:14px;background:#D9D9D9;margin:0 2px"></span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:13px;height:13px;border-radius:2px;background:#3483FA;display:inline-block"></span>BL disponible (sin stock)</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:13px;height:13px;border-radius:2px;background:transparent;border:1px dashed #D9D9D9;display:inline-block"></span>No existe (gap estructural)</span>
+    <span style="display:flex;align-items:center;gap:4px;margin-left:auto"><span style="width:8px;height:8px;border-radius:50%;background:#F5A623;display:inline-block"></span>Sin movimiento ≥30 días</span>
+  </div>
+  <div id="main">
+    <div id="mapwrap"></div>
+    <div id="det">
+      <div id="det-hdr" style="display:flex;align-items:center;gap:6px">
+        <button id="det-back" onclick="renderRanking()" title="Volver al buscador"
+          style="display:none;background:none;border:none;cursor:pointer;color:#3483FA;font-size:14px;padding:0 2px;line-height:1">&#8592;</button>
+        <span id="det-hdr-txt">Detalle de Ubicación</span>
+      </div>
+      <div id="det-body"><div style="color:#666666;font-size:10px;text-align:center;margin-top:20px">Click en una celda</div></div>
+    </div>
+  </div>
+</div>
+<div id="sug-view">
+  <div id="sug-search-bar">
+    <input id="sug-input" type="text" placeholder="Buscar SKU, producto o categoría…" oninput="filtrarSKUList(this.value)" onkeydown="if(event.key==='Enter')buscarSugerencia()">
+    <button id="btn-sug-buscar" onclick="buscarSugerencia()">🔍 Buscar ubicaciones</button>
+    <span style="font-size:9px;color:#999999" id="sug-status"></span>
+  </div>
+  <div id="sug-body">
+    <div id="sug-sku-list">
+      <div id="sug-sku-hdr"><span>SKU · SLA Pendiente</span><span>Qty</span></div>
+      <div id="sug-sku-items"><div style="padding:16px;color:#999999;font-size:10px">Cargando inventario…</div></div>
+    </div>
+    <div id="sug-results">
+      <div id="sug-cola-wrap">
+        <div style="font-size:10px;font-weight:700;color:#F23D4F;margin-bottom:6px;display:flex;align-items:center;gap:6px">
+          🚨 Cola de Putaway Pendiente
+          <span style="font-size:8px;color:#999999;font-weight:400">ordenada por urgencia SLA</span>
+        </div>
+        <div id="sug-cola"><div style="color:#999999;font-size:10px">Cargando…</div></div>
+      </div>
+      <div id="sug-sinmov-wrap" style="margin-top:14px">
+        <div style="font-size:10px;font-weight:700;color:#F5A623;margin-bottom:6px;display:flex;align-items:center;gap:6px">
+          ⏱ Stock sin movimiento
+          <span style="font-size:8px;color:#999999;font-weight:400">SKUs sin picking ≥30 días · top 30</span>
+          <span id="sinmov-kpi" style="margin-left:auto;font-size:9px;color:#F5A623"></span>
+        </div>
+        <div id="sug-sinmov"><div style="color:#999999;font-size:10px">Sin datos (corre fetch_sin_movimiento.py)</div></div>
+      </div>
+      <div id="sug-empty" style="display:none">
+        🔍 Busca un SKU o producto para ver<br>sugerencias de dónde guardarlo<br>
+        <span style="font-size:10px;color:#D9D9D9">basado en volumetría y afinidad de producto</span>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="inv-view">
+  <div id="inv-toolbar">
+    <input id="inv-search" type="text" placeholder="Buscar por SKU, producto, marca o categoría…" oninput="invFiltrar()">
+    <button class="inv-filter-btn on rk" id="inv-f-rs" onclick="invToggleArea('RS')">RS</button>
+    <button class="inv-filter-btn on rk" id="inv-f-rk" onclick="invToggleArea('RK')">RK</button>
+    <button class="inv-filter-btn on bl" id="inv-f-bl" onclick="invToggleArea('BL')">BL</button>
+    <button class="inv-filter-btn" id="inv-f-multi" onclick="invToggleMulti()">Multi-SKU</button>
+    <span id="inv-count" style="font-size:9px;color:#999999"></span>
+  </div>
+  <div id="inv-body">
+    <div id="inv-table-wrap">
+      <table id="inv-tbl">
+        <thead><tr>
+          <th onclick="invSort('sku')">SKU</th>
+          <th onclick="invSort('ean')">EAN</th>
+          <th onclick="invSort('title')">Producto</th>
+          <th onclick="invSort('brand')">Marca</th>
+          <th onclick="invSort('area')">Área</th>
+          <th onclick="invSort('qty')">Stock</th>
+          <th onclick="invSort('locs')" class="sort-desc">Ubic.</th>
+        </tr></thead>
+        <tbody id="inv-tbody"></tbody>
+      </table>
+    </div>
+    <div id="inv-detail">
+      <div id="inv-det-hdr">Detalle SKU</div>
+      <div id="inv-det-body" style="padding:16px;color:#999999;font-size:10px;text-align:center;margin-top:20px">Selecciona un SKU</div>
+    </div>
+  </div>
+</div>
+<div id="chk-view">
+  <div id="chk-toolbar">
+    <div id="chk-kpis">
+      <div class="chk-kpi"><div class="chk-kv" id="ck-total" style="color:#3483FA">—</div><div class="chk-kl">Movables</div></div>
+      <div class="chk-kpi"><div class="chk-kv" id="ck-pw" style="color:#3483FA">—</div><div class="chk-kl">En Proceso</div></div>
+      <div class="chk-kpi"><div class="chk-kv" id="ck-pend" style="color:#F5A623">—</div><div class="chk-kl">Pendientes</div></div>
+      <div class="chk-kpi"><div class="chk-kv" id="ck-over" style="color:#F23D4F">—</div><div class="chk-kl">Sobre SLA</div></div>
+      <div class="chk-kpi"><div class="chk-kv" id="ck-nt" style="color:#3483FA">—</div><div class="chk-kl">No Toteables</div></div>
+      <div class="chk-kpi"><div class="chk-kv" id="ck-done" style="color:#00A650">—</div><div class="chk-kl">Completos</div></div>
+      <div class="chk-kpi"><div class="chk-kv" id="ck-upd" style="color:#999999;font-size:9px">—</div><div class="chk-kl">Actualizado</div></div>
+    </div>
+  </div>
+  <div id="chk-body">
+    <div id="chk-list">
+      <table id="chk-tbl">
+        <thead><tr>
+          <th>SLA</th>
+          <th>SKU</th>
+          <th>Producto</th>
+          <th>Qty</th>
+          <th>Check-in</th>
+          <th>Espera</th>
+          <th>Putaway</th>
+          <th>Ubic. destino</th>
+          <th>Operario</th>
+          <th>Shipment</th>
+        </tr></thead>
+        <tbody id="chk-tbody"></tbody>
+      </table>
+    </div>
+    <div id="chk-detail">
+      <div id="chk-det-hdr" style="color:#3483FA">Detalle</div>
+      <div id="chk-det-body" style="padding:20px;color:#999999;font-size:10px;text-align:center">Selecciona un ítem</div>
+    </div>
+  </div>
+</div>
+<div id="tip"></div>
 <script>
-// ── Configuración (para otro CD basta cambiar WH y las etiquetas) ─────────────────────────
-const CONFIG = {
-  WH: 'CLRM04',
-  DATA_URL: 'data/ocupacion_CLRM04.json',
-  REFRESH_SECONDS: 60,
-  WARN_HOURS: 3,      // aviso ámbar si el archivo se generó hace más de N horas
-  BAD_HOURS: 24,      // aviso rojo
-  ZONE_LABELS: { RS: 'RS · Rack selectivo', RK: 'RK · Rack', BL: 'BL · Bulk (piso)' },
-  ZONE_ORDER: ['RS', 'RK', 'BL']
+// ── Colores ────────────────────────────────────────────────────────────────
+// 0=vacío  1=verde  2=amarillo  3=naranja  4+=rojo
+function skuColor(n){
+  if(n<=0) return '#E8E8E8';
+  if(n===1) return '#00A650';  // verde
+  if(n===2) return '#F5A623';  // amarillo
+  if(n===3) return '#d07030';  // naranja
+  return '#F23D4F';            // rojo (4+)
+}
+function blSkuColor(n){ return skuColor(n); }
+
+// ── Tabs BL ────────────────────────────────────────────────────────────────
+let BL_TABS = [
+  { id:'Handstack', label:'BL-0-Handstack', color:'#00d4ff', aisles:[1,2,3,4,5,6,7,8,9] },
+  { id:'OUT1',      label:'BL0-OUT1',       color:'#F5A623', aisles:[10,11,12] },
+  { id:'OUT2',      label:'BL0-OUT2',       color:'#00A650', aisles:[100,101,102] },
+  { id:'Other',     label:'OTRAS BL',       color:'#666666', aisles:[59,60,61,203,204,205,206,207,208,209,210,310,311,312,315,501,502,503,504,601,602,603,604,605,606] },
+];
+
+// En CLRM04 cada parte de BL es una zona distinta: la zona de un pasillo sale de la pestaña (BL_TABS) que lo contiene.
+function getBLZone(aisle, bay){
+  const t = BL_TABS.find(t=>t.aisles.includes(aisle));
+  return t ? t.id : null;
+}
+
+// ── Zonas RK accordion ─────────────────────────────────────────────────────
+let ZONE_DEFS = [
+  { id:'ZA',  zp:'RK', label:'RK — Z-A  (P005–P012)', color:'#00A650',
+    aisles:[5,6,7,8,9,10,11,12], maxBay:50, step:10 },
+  { id:'ZA2', zp:'RK', label:'RK — Z-A2 (P013–P018)', color:'#56d364',
+    aisles:[13,14,15,16,17,18], maxBay:50, step:10 },
+  { id:'ZB', zp:'RK', label:'RK — Z-B  (P101–P123)', color:'#3483FA',
+    aisles:[101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123], maxBay:66, step:10 },
+];
+
+// ── Estado ────────────────────────────────────────────────────────────────
+let DAY={}, BAYS=[], bayMap={}, selKey=null, CATALOG={}, RESP={}, BL_WMS_LAYOUT={}, VOLDATA={}, SINMOV={};
+let VIEW_MODE='sku'; // 'sku' | 'vol'
+
+function volColor(pct){
+  if(pct<=0)  return '#E8E8E8';
+  if(pct<=30) return '#E6F7EE';
+  if(pct<=60) return '#2d7a4a';
+  if(pct<=80) return '#F5A623';
+  if(pct<=95) return '#d07030';
+  return '#F23D4F';
+}
+
+function bayVolData(b){
+  let totL=0, usadoL=0, pesoMax=0, pesoUsado=0, conDim=0;
+  b.slots.forEach(s=>{
+    const v=VOLDATA[s.id];
+    if(v){ totL+=v.volumen_l; usadoL+=v.vol_usado_l; pesoMax+=v.peso_max_kg; pesoUsado+=v.peso_usado_kg; conDim++; }
+  });
+  const pct = totL>0 ? Math.round(usadoL/totL*100) : 0;
+  return { totL:Math.round(totL*10)/10, usadoL:Math.round(usadoL*10)/10, pct, pesoMax:Math.round(pesoMax), pesoUsado:Math.round(pesoUsado*10)/10, conDim };
+}
+
+// ── Zonas y pasillos calculados desde los datos (este CD no usa los pasillos fijos de CLRM03) ──
+const CD_SIN_SUGERENCIAS = true;
+const ZONE_NAMES  = { RS:'Rack selectivo', RK:'Rack', BL:'Bulk (piso)' };
+const ZONE_COLORS = { RS:'#00A650', RK:'#3483FA', BL:'#4da6ff' };
+// Grupos de BL según el layout de CLRM04 (Q4 2026): "BL parte 1" y "BL parte 2" son zonas distintas.
+// Rangos de pasillos tomados del layout; el pasillo 98 figura en el layout pero fue eliminado del WMS.
+const BL_GROUPS = [
+  { id:'BL1', label:'BL parte 1', color:'#00d4ff', min:98,  max:111 },
+  { id:'BL2', label:'BL parte 2', color:'#F5A623', min:126, max:137 },
+];
+// Familias de producto de RS según el layout de CLRM04 (Q4 2026). Se definen por módulo (= bay) y aplican a todos los
+// pasillos de RS. Los bays 11-12, 21-22 y 39-40 no tienen familia asignada en el layout.
+const RS_FAMILIES = [
+  { name:'Alimentos', from:13, to:14, color:'#e8590c' },
+  { name:'Belleza',   from:15, to:16, color:'#d6336c' },
+  { name:'Salud',     from:17, to:20, color:'#0c8599' },
+  { name:'Suspel',    from:23, to:38, color:'#7048e8' },
+  { name:'Limpieza',  from:41, to:46, color:'#2f9e44' },
+];
+function rsFamily(bay){ return RS_FAMILIES.find(f=>bay>=f.from&&bay<=f.to)||null; }
+// Leyenda de familias con la ocupación de cada una (todas las ubicaciones RS de esa familia, en todos los pasillos)
+function rsFamilyLegend(){
+  const acc={}; const key=f=>f?f.name:'Sin familia';
+  BAYS.forEach(b=>{ if(b.zone!=='RS') return; const k=key(rsFamily(b.bay));
+    const a=acc[k]||(acc[k]={occ:0,tot:0}); b.slots.forEach(s=>{ a.tot++; if(s.skus.length>0) a.occ++; }); });
+  const chip=(name,color,range)=>{ const a=acc[name]||{occ:0,tot:0};
+    return `<span class="fam-chip" style="border-color:${color};color:${color}"><b>${name}</b>${range?` · bays ${range}`:''} · ${a.tot?Math.round(a.occ/a.tot*100):0}% ocup. (${a.occ}/${a.tot})</span>`; };
+  return `<div class="fam-legend"><span class="fam-title">Familias de RS:</span>` +
+    RS_FAMILIES.map(f=>chip(f.name,f.color,`${f.from}–${f.to}`)).join('') + chip('Sin familia','#999999','') + `</div>`;
+}
+let _zonesReady = false;
+function autoZones(){
+  const byZone={};
+  BAYS.forEach(b=>{ (byZone[b.zone]=byZone[b.zone]||new Set()).add(b.aisle); });
+  const rng=a=>a.length?`P${String(a[0]).padStart(3,'0')}–P${String(a[a.length-1]).padStart(3,'0')}`:'';
+  const racks=['RS','RK'].concat(Object.keys(byZone).filter(z=>!['RS','RK','BL'].includes(z))).filter(z=>byZone[z]);
+  ZONE_DEFS=racks.map(z=>{ const a=[...byZone[z]].sort((x,y)=>x-y);
+    return { id:z, zp:z, label:`${z} — ${ZONE_NAMES[z]||z} (${rng(a)})`, color:ZONE_COLORS[z]||'#7B61FF', aisles:a, maxBay:50, step:10 }; });
+  const bl=[...(byZone.BL||[])].sort((x,y)=>x-y);
+  BL_TABS=BL_GROUPS.map(g=>({ id:g.id, name:g.label, color:g.color, aisles:bl.filter(a=>a>=g.min&&a<=g.max) })).filter(t=>t.aisles.length);
+  const blOther=bl.filter(a=>!BL_GROUPS.some(g=>a>=g.min&&a<=g.max));
+  if(blOther.length) BL_TABS.push({ id:'BLX', name:'BL otros', color:'#666666', aisles:blOther });
+  BL_TABS.forEach(t=>{ t.label=`${t.name} (${rng(t.aisles)})`; });
+  blTab = BL_TABS.length ? BL_TABS[0].id : 'BL1';
+  RANK_AREAS=BL_TABS.map(t=>({id:t.id, label:`${t.name} — ${ZONE_NAMES.BL}`, color:t.color, test:(b)=>b.zone==='BL'&&t.aisles.includes(b.aisle)}))
+    .concat(racks.map(z=>({id:z, label:`${z} — ${ZONE_NAMES[z]||z}`, color:ZONE_COLORS[z]||'#7B61FF', test:(b)=>b.zone===z})));
+  if(!_zonesReady){
+    openZones=new Set(ZONE_DEFS.map(z=>z.id));
+    _rankAreaOpen=new Set(RANK_AREAS.map(a=>a.id));
+    _zonesReady=true;
+  }
+}
+
+function toggleViewMode(){
+  VIEW_MODE = VIEW_MODE==='sku' ? 'vol' : 'sku';
+  const btn = document.getElementById('btn-view-mode');
+  if(VIEW_MODE==='vol'){
+    btn.textContent='📦 Ver por SKU'; btn.style.borderColor='#F5A623'; btn.style.color='#F5A623';
+  } else {
+    btn.textContent='📐 Ver por Volumen'; btn.style.borderColor='#D9D9D9'; btn.style.color='#666666';
+  }
+  buildGrid();
+  if(selKey && bayMap[selKey]){ document.querySelector(`[data-key="${CSS.escape(selKey)}"]`)?.classList.add('sel'); }
+}
+let blTab='Handstack';
+let openZones=new Set(ZONE_DEFS.map(z=>z.id));
+let aisleSel={}; // zoneId → Set<aisle> (vacío = todos)
+
+function toggleAisle(zid, aisle){
+  if(!aisleSel[zid]) aisleSel[zid]=new Set();
+  const s=aisleSel[zid];
+  if(s.has(aisle)) s.delete(aisle); else s.add(aisle);
+  buildGrid();
+}
+function setAllAisles(zid){
+  aisleSel[zid]=new Set();
+  buildGrid();
+}
+
+// ── Auto-refresh ──────────────────────────────────────────────────────────
+const AUTO_INTERVAL=60;
+let autoOn=true, cdLeft=AUTO_INTERVAL;
+const cdEl=()=>document.getElementById('ref-cd');
+setInterval(()=>{
+  if(!autoOn){cdEl().textContent='—';return;}
+  cdLeft--;cdEl().textContent=cdLeft;
+  if(cdLeft<=0){cdLeft=AUTO_INTERVAL;loadData();}
+},1000);
+// Ticker de SLA en vivo — re-renderiza la tabla putaway cada 60s sin recargar JSON
+setInterval(()=>{
+  if(typeof renderPutawaySLA==='function'){
+    const tabPw=document.getElementById('tab-chk');
+    if(tabPw&&tabPw.classList.contains('active')) renderPutawaySLA();
+  }
+},60000);
+function toggleAuto(){
+  autoOn=!autoOn;cdLeft=AUTO_INTERVAL;
+  document.getElementById('autoref').classList.toggle('active',autoOn);
+  cdEl().textContent=autoOn?AUTO_INTERVAL:'—';
+}
+
+// ── Carga volumetría ──────────────────────────────────────────────────────
+async function loadVolumetria(){
+  try{
+    const r=await fetch('data/volumetria_CLRM04.json?t='+Math.floor(Date.now()/3600000)*3600000);
+    if(r.ok){const d=await r.json(); VOLDATA=d.addresses||{};}
+  }catch(e){}
+}
+
+// ── Carga layout WMS BL ───────────────────────────────────────────────────
+async function loadBLLayout(){
+  try{
+    const r=await fetch('data/bl_wms_layout_CLRM04.json?t='+Date.now());
+    if(r.ok){
+      const d=await r.json();
+      const raw=d.layout||{};
+      BL_WMS_LAYOUT={};
+      Object.keys(raw).forEach(k=>{BL_WMS_LAYOUT[parseInt(k)]=new Set(raw[k]);});
+    }
+  }catch(e){}
+}
+
+// ── Carga de catálogo ──────────────────────────────────────────────────────
+async function loadCatalog(){
+  try{
+    const r=await fetch('data/catalog_CLRM04.json?t='+Date.now());
+    if(r.ok){const d=await r.json();CATALOG=d.catalog||{};}
+  }catch(e){}
+}
+
+// ── Carga de responsables ──────────────────────────────────────────────────
+async function loadResp(){
+  try{
+    const r=await fetch('data/responsables_CLRM04.json?t='+Date.now());
+    if(r.ok){const d=await r.json();RESP=d.data||{};}
+  }catch(e){}
+}
+
+// ── Carga sin movimiento ───────────────────────────────────────────────────
+async function loadSinMovimiento(){
+  try{
+    const r=await fetch('data/sin_movimiento_CLRM04.json?t='+Math.floor(Date.now()/86400000)*86400000);
+    if(r.ok){const d=await r.json(); SINMOV=d.slots||{};}
+  }catch(e){}
+}
+
+// ── Carga disponibilidad WMS BL ────────────────────────────────────────────
+async function loadDisponibles(){
+  try{
+    const r=await fetch('data/disponibles_CLRM04.json?t='+Date.now());
+    if(r.ok){
+      const d=await r.json();
+      const alm=d.storage||{},pick=d.picking||{};
+      document.getElementById('k-disp-alm').textContent=alm.libre!=null?`${alm.libre}/${alm.total}`:'—';
+      document.getElementById('k-disp-pick').textContent=pick.libre!=null?`${pick.libre}/${pick.total}`:'—';
+    }
+  }catch(e){}
+}
+
+// ── Carga de datos de stock ────────────────────────────────────────────────
+async function loadData(){
+  cdLeft=AUTO_INTERVAL;
+  document.getElementById('btnRef').classList.add('spin');
+  try{
+    const r=await fetch('data/ocupacion_CLRM04.json?t='+Date.now());
+    if(!r.ok) throw new Error('Sin datos. Corre fetch_ocupacion.py primero.');
+    DAY=await r.json();
+    BAYS=DAY.bays||[];
+    bayMap={};
+    BAYS.forEach(b=>{bayMap[`${b.zone}-${b.aisle}-${b.bay}`]=b;});
+    autoZones();
+    renderKPIs();
+    buildGrid();
+    if(selKey){
+      const c=document.querySelector(`[data-key="${CSS.escape(selKey)}"]`);
+      if(c) c.classList.add('sel');
+      renderDetail(bayMap[selKey],selKey);
+    } else {
+      renderRanking();
+    }
+  }catch(e){
+    document.getElementById('mapwrap').innerHTML=`<div style="color:#F23D4F;padding:20px">${e.message}</div>`;
+  }finally{
+    document.getElementById('btnRef').classList.remove('spin');
+  }
+}
+
+// ── KPIs ──────────────────────────────────────────────────────────────────
+// Antigüedad de los datos (hora de Chile). Ámbar >8h, rojo >24h.
+function updateFreshness(){
+  const el=document.getElementById('fresh-banner');
+  if(!DAY||!DAY.date||!DAY.updated){el.style.display='none';return;}
+  const toMs=s=>Date.parse(s.replace(' ','T')+'Z');
+  const nowCl=new Date().toLocaleString('sv-SE',{timeZone:'America/Santiago'});
+  // Edad del DATO (corte de stock de BigQuery); si el archivo es antiguo y no lo trae, se usa la hora de generación.
+  const cut=DAY.date+' '+DAY.updated;
+  const hrs=(toMs(nowCl)-toMs(cut))/3600000;
+  if(!(hrs>3)){el.style.display='none';return;}
+  const txt=hrs>=48?Math.floor(hrs/24)+' días':Math.floor(hrs)+' h';
+  const bad=hrs>8;
+  el.style.display='block';
+  el.style.background=bad?'#F23D4F':'#FFB020';
+  el.style.color=bad?'#FFFFFF':'#333333';
+  el.textContent=(bad?'⚠ DATOS DESACTUALIZADOS: ':'Atención: ')+'el archivo se generó hace '+txt+' ('+cut+'). BigQuery se carga cada 1 a 1,5 h; el refresh solo recarga el archivo.';
+}
+setInterval(updateFreshness,60000);
+
+function renderKPIs(){
+  const s=DAY.stats||{};
+  document.getElementById('hupd').textContent      =DAY.stock_cut?('stock al corte '+DAY.stock_cut.slice(11,16)+' · generado '+(DAY.updated||'—').slice(0,5)+' ('+DAY.date+')'):((DAY.date?DAY.date+' ':'')+(DAY.updated||'—'));
+  updateFreshness();
+  document.getElementById('k-slots').textContent   =(s.total_slots||0).toLocaleString();
+  document.getElementById('k-bays').textContent    =(s.locs_occ||0).toLocaleString();
+  document.getElementById('k-pct').textContent     =(s.pct_occ||0)+'%';
+  document.getElementById('k-pct-multi').textContent=(s.pct_multi||0)+'%';
+  document.getElementById('k-locs-1').textContent  =(s.locs_1||0).toLocaleString();
+  document.getElementById('k-locs-2').textContent  =(s.locs_2||0).toLocaleString();
+  document.getElementById('k-locs-3').textContent  =(s.locs_3||0).toLocaleString();
+  document.getElementById('k-locs-4p').textContent =(s.locs_4plus||0).toLocaleString();
+  const blOver=BAYS.filter(b=>b.zone==='BL').reduce((a,b)=>a+b.slots.filter(s=>s.skus.length>1).length,0);
+  document.getElementById('k-bl-over').textContent=blOver.toLocaleString();
+}
+
+// ── Accordion RK ──────────────────────────────────────────────────────────
+function toggleZone(id){
+  openZones.has(id)?openZones.delete(id):openZones.add(id);
+  document.getElementById('zs-'+id)?.classList.toggle('collapsed',!openZones.has(id));
+}
+
+// ── BL Tab ────────────────────────────────────────────────────────────────
+function setBLTab(id){ blTab=id; buildGrid(); if(selKey&&bayMap[selKey]){document.querySelector(`[data-key="${CSS.escape(selKey)}"]`)?.classList.add('sel');} }
+
+// ── Build Grid ────────────────────────────────────────────────────────────
+function buildGrid(){
+  // Compute actual maxBay and step from real data (overrides hardcoded values)
+  ZONE_DEFS.forEach(zd=>{
+    const aisleSet=new Set(zd.aisles);
+    let mb=0;
+    const lvlPos={};
+    BAYS.forEach(b=>{
+      if(b.zone!==zd.zp||!aisleSet.has(b.aisle)) return;
+      if(b.bay>mb) mb=b.bay;
+      b.slots.forEach(s=>{
+        if(!lvlPos[s.level]) lvlPos[s.level]=new Set();
+        lvlPos[s.level].add(s.pos);
+      });
+    });
+    zd.maxBay=mb||50;
+    zd.step=mb>150?20:mb>80?10:5;
+    zd.rows=[];
+    Object.keys(lvlPos).map(Number).sort((a,b)=>b-a).forEach(l=>{
+      [...lvlPos[l]].sort((a,b)=>a-b).forEach(p=>zd.rows.push({level:l,pos:p,label:`L${l}·P${p}`}));
+    });
+  });
+
+  const CELL_MIN=10;
+  const parts=[];
+
+  // slotMap: "ZONE-aisle-bay-level-pos" → slot (individual bin)
+  const slotMap={};
+  BAYS.forEach(b=>{
+    b.slots.forEach(s=>{
+      slotMap[`${b.zone}-${b.aisle}-${b.bay}-${s.level}-${s.pos}`]={skus:s.skus,id:s.id};
+    });
+  });
+
+  const BL_ROWS=[{level:0,pos:0,label:''}];
+
+  // Renderiza UNA fila de bins: una celda por bay
+  function renderRow(zone, aisle, bayMax, lvl, pos, label, gridW, isBL){
+    const lbl=label
+      ? `<span style="color:#6e7681;font-size:6px;font-family:monospace">${label}</span>`
+      : `<span style="color:#999999;font-size:8px;font-family:monospace">P${String(aisle).padStart(3,'0')}</span>`;
+    parts.push(`<div class="aisle-row"><div class="aisle-lbl">${lbl}</div>`);
+    parts.push(`<div class="bay-grid" style="grid-template-columns:repeat(${bayMax},minmax(${CELL_MIN}px,1fr));min-width:${gridW}px">`);
+    for(let bay=1;bay<=bayMax;bay++){
+      const bayKey=`${zone}-${aisle}-${bay}`;
+      const slKey=`${zone}-${aisle}-${bay}-${lvl}-${pos}`;
+      const sl=slotMap[slKey];
+      const bayExists=!!bayMap[bayKey];
+      if(sl){
+        const n=sl.skus.length;
+        const bg=isBL?blSkuColor(n):skuColor(n);
+        const bgFinal=VIEW_MODE==='vol'&&bayExists?volColor(bayVolData(bayMap[bayKey]).pct):bg;
+        // Indicador sin movimiento: punto naranja si algún SKU lleva ≥30 días sin picking
+        const smData=SINMOV[sl.id];
+        const maxDias=smData?Math.max(...Object.values(smData)):0;
+        const smDot=maxDias>=30?`<span style="position:absolute;top:1px;right:1px;width:3px;height:3px;border-radius:50%;background:#F5A623;pointer-events:none"></span>`:'';
+        const wrapStyle=smDot?'position:relative;overflow:visible':'';
+        parts.push(`<div class="bc" style="background:${bgFinal};${wrapStyle}" data-key="${bayKey}" data-slot="${sl.id}" title="${slKey}">${smDot}</div>`);
+      }else if(bayExists){
+        parts.push(`<div class="${isBL?'bc empty bl-empty':'bc empty'}" data-key="${bayKey}"></div>`);
+      }else{
+        parts.push(`<div class="bc wms-gap"></div>`);
+      }
+    }
+    parts.push(`</div></div>`);
+  }
+
+  // Renderiza una fila de nivel RK: una celda por bay, agrega todas las posiciones
+  function renderRKLevelRow(zone, aisle, bayMax, lvl, gridW){
+    const lbl=`<span style="color:#6e7681;font-size:7px;font-family:monospace;font-weight:700">L${lvl}</span>`;
+    parts.push(`<div class="aisle-row"><div class="aisle-lbl">${lbl}</div>`);
+    parts.push(`<div class="bay-grid" style="grid-template-columns:repeat(${bayMax},minmax(${CELL_MIN}px,1fr));min-width:${gridW}px">`);
+    for(let bay=1;bay<=bayMax;bay++){
+      const bayKey=`${zone}-${aisle}-${bay}`;
+      const b=bayMap[bayKey];
+      if(!b){ parts.push(`<div class="bc wms-gap"></div>`); continue; }
+      const levelSlots=b.slots.filter(s=>s.level===lvl);
+      if(!levelSlots.length){ parts.push(`<div class="bc wms-gap"></div>`); continue; }
+      const maxN=Math.max(...levelSlots.map(s=>s.skus.length));
+      if(maxN===0){ parts.push(`<div class="bc empty" data-key="${bayKey}" data-level="${lvl}"></div>`); continue; }
+      const bg=VIEW_MODE==='vol'?volColor(bayVolData(b).pct):skuColor(maxN);
+      const hasSinMov=levelSlots.some(s=>{const sm=SINMOV[s.id];return sm&&Math.max(...Object.values(sm))>=30;});
+      const smDot=hasSinMov?`<span style="position:absolute;top:1px;right:1px;width:3px;height:3px;border-radius:50%;background:#F5A623;pointer-events:none"></span>`:'';
+      const wrapStyle=smDot?'position:relative;overflow:visible':'';
+      parts.push(`<div class="bc" style="background:${bg};${wrapStyle}" data-key="${bayKey}" data-level="${lvl}">${smDot}</div>`);
+    }
+    parts.push(`</div></div>`);
+  }
+
+  // Separador entre pasillos
+  function aisleHeader(label){
+    parts.push(`<div style="display:flex;align-items:center;height:14px;margin:2px 0 0 0">`);
+    parts.push(`<div style="width:62px;flex-shrink:0;font-size:9px;font-weight:700;color:#3483FA;font-family:monospace;text-align:right;padding-right:7px">${label}</div>`);
+    parts.push(`<div style="flex:1;height:1px;background:#F5F5F5"></div></div>`);
+  }
+
+  // ── Vista detallada: una celda por slot (bay × nivel × posición) ──────────
+  function renderAisleSlots(zone, aisle, baysInAisle){
+    // Ordenar bays y obtener todas las posiciones únicas por bay
+    const sortedBays = baysInAisle.slice().sort((a,b)=>a.bay-b.bay);
+
+    // Construir lista de columnas: {bay, pos}
+    const cols = [];
+    sortedBays.forEach(b=>{
+      const positions = [...new Set(b.slots.map(s=>s.pos))].sort((a,b)=>a-b);
+      positions.forEach(p=>cols.push({bay:b.bay, pos:p}));
+    });
+    if(!cols.length) return;
+
+    // Niveles disponibles en este pasillo
+    const levels = new Set();
+    baysInAisle.forEach(b=>b.slots.forEach(s=>levels.add(s.level)));
+    const sortedLevels = [...levels].sort((a,b)=>b-a);
+
+    // Lookup: "bay-level-pos" → slot
+    const slotLookup = {};
+    baysInAisle.forEach(b=>b.slots.forEach(s=>{
+      slotLookup[`${b.bay}-${s.level}-${s.pos}`] = {id:s.id, skus:s.skus};
+    }));
+
+    const CELL_S = 11; // px por celda en vista detallada
+    const GAP_BAY = 3; // px extra entre bays
+
+    // Calcular ancho total: cols * cell + gaps entre bays
+    const uniqueBays = [...new Set(cols.map(c=>c.bay))];
+    const totalW = cols.length * (CELL_S+1) + uniqueBays.length * GAP_BAY;
+
+    // Eje X: números de bay (encima de sus columnas)
+    parts.push(`<div style="display:flex;margin-left:48px;overflow:visible;margin-bottom:1px">`);
+    let colIdx=0;
+    sortedBays.forEach(b=>{
+      const bCols = cols.filter(c=>c.bay===b.bay);
+      const w = bCols.length*(CELL_S+1);
+      const occ = b.slots.filter(s=>s.skus.length>0).length;
+      const tot = b.n_slots;
+      const pct = tot>0?Math.round(occ/tot*100):0;
+      const bayColor = pct>=80?'#F23D4F':pct>=50?'#F5A623':'#3483FA';
+      // RS: franja de color con la familia del bay (Alimentos, Belleza, Salud, Suspel, Limpieza)
+      const fam = zone==='RS' ? rsFamily(b.bay) : null;
+      const famStyle = zone==='RS' ? `border-bottom:3px solid ${fam?fam.color:'#E0E0E0'};` : '';
+      parts.push(`<div title="${fam?'Familia: '+fam.name:(zone==='RS'?'Sin familia asignada':'')}" style="width:${w}px;flex-shrink:0;margin-right:${GAP_BAY}px;text-align:center;font-size:6px;font-family:monospace;color:${bayColor};overflow:hidden;white-space:nowrap;${famStyle}">${b.bay}</div>`);
+    });
+    parts.push(`</div>`);
+
+    // Subencabezado posiciones (P1 P2 P3 bajo cada bay)
+    parts.push(`<div style="display:flex;margin-left:48px;margin-bottom:2px">`);
+    sortedBays.forEach(b=>{
+      const bCols = cols.filter(c=>c.bay===b.bay);
+      bCols.forEach(c=>{
+        parts.push(`<div style="width:${CELL_S}px;flex-shrink:0;margin-right:1px;text-align:center;font-size:5px;color:#AAAAAA;font-family:monospace">P${c.pos}</div>`);
+      });
+      parts.push(`<div style="width:${GAP_BAY}px;flex-shrink:0"></div>`);
+    });
+    parts.push(`</div>`);
+
+    // Filas de niveles
+    sortedLevels.forEach(lvl=>{
+      parts.push(`<div style="display:flex;align-items:center;margin-bottom:1px">`);
+      parts.push(`<div style="width:46px;flex-shrink:0;text-align:right;padding-right:4px;font-size:7px;font-family:monospace;font-weight:700;color:#6e7681">L${lvl}</div>`);
+      sortedBays.forEach(b=>{
+        const bCols = cols.filter(c=>c.bay===b.bay);
+        bCols.forEach(c=>{
+          const sl = slotLookup[`${b.bay}-${lvl}-${c.pos}`];
+          const bayKey = `${zone}-${aisle}-${b.bay}`;
+          if(!sl){
+            parts.push(`<div class="bc wms-gap" style="width:${CELL_S}px;height:${CELL_S}px;flex-shrink:0;margin-right:1px"></div>`);
+          } else {
+            const n = sl.skus.length;
+            const bg = n===0 ? '#E8E8E8' : skuColor(n);
+            const smData = SINMOV[sl.id];
+            const maxDias = smData?Math.max(...Object.values(smData)):0;
+            const smDot = maxDias>=30?`<span style="position:absolute;top:1px;right:1px;width:3px;height:3px;border-radius:50%;background:#F5A623;pointer-events:none"></span>`:'';
+            const rel = smDot?'position:relative;overflow:visible':'';
+            parts.push(`<div class="bc" style="background:${bg};width:${CELL_S}px;height:${CELL_S}px;flex-shrink:0;margin-right:1px;${rel}" data-key="${bayKey}" data-slot="${sl.id}" title="${sl.id}">${smDot}</div>`);
+          }
+        });
+        parts.push(`<div style="width:${GAP_BAY}px;flex-shrink:0"></div>`);
+      });
+      parts.push(`</div>`);
+    });
+  }
+
+  // ── BL section ────────────────────────────────────────────────────────
+  const tab=BL_TABS.find(t=>t.id===blTab)||BL_TABS[0];
+  const tabAisleSet=new Set(tab.aisles);
+  let tabMaxBay=0;
+  tab.aisles.forEach(aisle=>{
+    const wl=BL_WMS_LAYOUT[aisle];
+    if(wl&&wl.size) wl.forEach(b=>{if(b>tabMaxBay)tabMaxBay=b;});
+  });
+  BAYS.forEach(b=>{
+    if(b.zone!=='BL'||!tabAisleSet.has(b.aisle)) return;
+    if(tab.id!=='Other'&&getBLZone(b.aisle,b.bay)!==tab.id) return;
+    if(b.bay>tabMaxBay) tabMaxBay=b.bay;
+  });
+  tabMaxBay=tabMaxBay||50;
+  const tabStep=tabMaxBay>100?20:tabMaxBay>40?10:5;
+  const gridW=Math.max(tabMaxBay*(CELL_MIN+1),200);
+
+  let tabOcc=0,tabTot=0,tabBays=0,tabEmpty=0;
+  BAYS.forEach(b=>{
+    if(b.zone!=='BL'||!tabAisleSet.has(b.aisle)) return;
+    if(tab.id!=='Other'&&getBLZone(b.aisle,b.bay)!==tab.id) return;
+    tabOcc+=b.slots.filter(s=>s.skus.length>0).length; tabTot+=b.n_slots; tabBays++;
+  });
+  const tabPct=tabTot>0?Math.round(tabOcc/tabTot*100):0;
+  tab.aisles.forEach(aisle=>{
+    const wl=BL_WMS_LAYOUT[aisle];
+    if(!wl) return;
+    wl.forEach(bay=>{if(!bayMap[`BL-${aisle}-${bay}`]) tabEmpty++;});
+  });
+  const tabDispPct=tabEmpty+tabBays>0?Math.round(tabEmpty/(tabEmpty+tabBays)*100):0;
+
+  parts.push(`<div class="bl-section">`);
+  parts.push(`<div class="bl-tabs">`);
+  BL_TABS.forEach(t=>{
+    const active=t.id===blTab;
+    parts.push(`<button class="bl-tab-btn ${active?'bl-tab-active':''}" style="color:${active?t.color:''};" onclick="setBLTab('${t.id}')">${t.label}</button>`);
+  });
+  parts.push(`</div><div class="bl-tab-content">`);
+  parts.push(`<div style="font-size:9px;color:#999999;margin-bottom:6px">${tabPct}% ocupación · ${tabBays} bays · ${tabMaxBay} cols &nbsp;·&nbsp; <span style="color:#4da6ff;font-weight:600">${tabEmpty} vacías</span> · <span style="color:#4da6ff">${tabDispPct}% disponibles</span></div>`);
+  parts.push(`<div class="zone-scroll">`);
+  parts.push(`<div class="bay-axis-row"><div class="axis-lbl-spacer"></div>`);
+  parts.push(`<div class="axis-inner" style="grid-template-columns:repeat(${tabMaxBay},minmax(${CELL_MIN}px,1fr));min-width:${gridW}px;flex:1">`);
+  for(let b=tabStep;b<=tabMaxBay;b+=tabStep) parts.push(`<div class="axis-tick" style="grid-column:${b}">${b}</div>`);
+  parts.push(`</div></div>`);
+  tab.aisles.forEach(aisle=>{
+    const wmsSet=BL_WMS_LAYOUT[aisle]||new Set();
+    const hasData=BAYS.some(b=>b.zone==='BL'&&b.aisle===aisle&&(tab.id==='Other'||getBLZone(b.aisle,b.bay)===tab.id))||wmsSet.size>0;
+    if(!hasData) return;
+    // BL: 1 fila por pasillo (slot único L0·P0)
+    renderRow('BL',aisle,tabMaxBay,0,0,'',gridW,true);
+  });
+  parts.push(`</div></div></div>`);
+
+  // ── RK accordion ──────────────────────────────────────────────────────
+  function zoneMeta(zd){
+    let occ=0,tot=0;
+    BAYS.forEach(b=>{ if(b.zone!==zd.zp||!zd.aisles.includes(b.aisle)) return;
+      occ+=b.slots.filter(s=>s.skus.length>0).length; tot+=b.n_slots; });
+    return tot>0?`${Math.round(occ/tot*100)}% occ · ${BAYS.filter(b=>b.zone===zd.zp&&zd.aisles.includes(b.aisle)).length} bays`:'—';
+  }
+  ZONE_DEFS.forEach(zd=>{
+    const gridW2=Math.max(zd.maxBay*(CELL_MIN+1),200);
+    const collapsed=!openZones.has(zd.id)?'collapsed':'';
+    const selSet=aisleSel[zd.id]||new Set();
+    const activeAisles=zd.aisles.filter(a=>BAYS.some(b=>b.zone===zd.zp&&b.aisle===a));
+
+    parts.push(`<div class="zone-section ${collapsed}" id="zs-${zd.id}">`);
+    parts.push(`<div class="zone-hdr" onclick="toggleZone('${zd.id}')"><span style="color:${zd.color}">${zd.label}</span><span style="font-weight:400;color:#999999;font-size:9px;margin-left:auto">${zoneMeta(zd)}</span></div>`);
+
+    // ── Barra de filtro de pasillos ───────────────────────────────────────
+    parts.push(`<div class="aisle-filter-bar">`);
+    parts.push(`<button class="aisle-chip-all" onclick="event.stopPropagation();setAllAisles('${zd.id}')">Todos</button>`);
+    activeAisles.forEach(a=>{
+      const on=selSet.has(a)?'on':'';
+      parts.push(`<button class="aisle-chip ${on}" onclick="event.stopPropagation();toggleAisle('${zd.id}',${a})">P${String(a).padStart(3,'0')}</button>`);
+    });
+    parts.push(`</div>`);
+
+    if(zd.zp==='RS') parts.push(rsFamilyLegend());
+
+    parts.push(`<div class="zone-body"><div class="zone-body-inner"><div class="zone-scroll">`);
+    parts.push(`<div class="bay-axis-row"><div class="axis-lbl-spacer"></div>`);
+    parts.push(`<div class="axis-inner" style="grid-template-columns:repeat(${zd.maxBay},minmax(${CELL_MIN}px,1fr));min-width:${gridW2}px;flex:1">`);
+    for(let b=zd.step;b<=zd.maxBay;b+=zd.step) parts.push(`<div class="axis-tick" style="grid-column:${b}">${b}</div>`);
+    parts.push(`</div></div>`);
+    zd.aisles.forEach(aisle=>{
+      // Filtrar por pasillo seleccionado (vacío = todos)
+      if(selSet.size>0 && !selSet.has(aisle)) return;
+      const baysInAisle=BAYS.filter(b=>b.zone===zd.zp&&b.aisle===aisle);
+      if(!baysInAisle.length) return;
+      aisleHeader(`P${String(aisle).padStart(3,'0')}`);
+      // Siempre vista detallada: 1 celda = 1 ubicación
+      renderAisleSlots(zd.zp, aisle, baysInAisle);
+    });
+    parts.push(`</div></div></div></div>`);
+  });
+
+  document.getElementById('mapwrap').innerHTML=parts.join('');
+}
+
+// ── Tooltip hover ─────────────────────────────────────────────────────────
+const tip=document.getElementById('tip');
+const mapwrap=document.getElementById('mapwrap');
+
+mapwrap.addEventListener('mousemove',e=>{
+  const cell=e.target.closest('[data-key]');
+  if(!cell){ tip.classList.remove('vis'); document.getElementById('s-msg').textContent='Hover sobre el mapa'; return; }
+  const b=bayMap[cell.dataset.key];
+  if(!b){
+    const [z,a,by]=cell.dataset.key.split('-');
+    tip.innerHTML=`<div style="font-family:monospace;font-weight:700;color:#4da6ff;margin-bottom:4px">${z} · Pasillo ${a} · Bay ${by}</div><div style="color:#00A650;font-size:9px">Disponible · Sin stock</div>`;
+    tip.style.left=(e.clientX+14)+'px'; tip.style.top=(e.clientY-10)+'px'; tip.classList.add('vis');
+    document.getElementById('s-zone').textContent=z; document.getElementById('s-aisle').textContent=a; document.getElementById('s-bay').textContent=by;
+    document.getElementById('s-msg').textContent='Disponible · Sin stock';
+    return;
+  }
+  const mx=Math.max(...b.slots.map(s=>s.skus.length));
+  const slotsOcc=b.slots.filter(s=>s.skus.length>0).length;  // slots con ≥1 SKU
+  const total=b.slots.reduce((a,s)=>a+s.skus.length,0);      // total SKUs en el bay
+  const pct=Math.round(slotsOcc/b.n_slots*100);               // % slots ocupados
+  const vd=bayVolData(b);
+  const volHtmlTip=vd.totL>0?`
+    <div style="margin-top:4px;border-top:1px solid #F5F5F5;padding-top:4px">
+      <div class="tr"><span class="tl">Vol. ocupado:</span><span class="tv" style="color:${volColor(vd.pct)}">${vd.pct}% · ${vd.usadoL} / ${vd.totL} L</span></div>
+      <div class="tr"><span class="tl">Peso ocupado:</span><span class="tv">${vd.pesoUsado} / ${vd.pesoMax} kg</span></div>
+    </div>`:'';
+  let lastPA='',lastPADate='',lastPAProc='',lastPAUnknown=false;
+  b.slots.forEach(s=>s.skus.forEach(sk=>{
+    const r=RESP[`${s.id}|${sk}`];
+    if(r&&(!lastPADate||r.date>lastPADate)){
+      lastPA=r.name?r.name:`Op. #${r.user}`;
+      lastPAUnknown=!r.name;
+      lastPADate=r.date;lastPAProc=r.proc||'put_away';
+    }
+  }));
+  const procIcon=lastPAProc==='transfer'?'🔄 Transfer':'📦 Put Away';
+  tip.innerHTML=`
+    <div style="font-family:monospace;font-weight:700;color:#3483FA;margin-bottom:4px">${b.zone} · Pasillo ${b.aisle} · Bay ${b.bay}</div>
+    <div class="tr"><span class="tl">Slots totales:</span><span class="tv">${b.n_slots}</span></div>
+    <div class="tr"><span class="tl">Slots ocupados:</span><span class="tv">${slotsOcc} / ${b.n_slots}</span></div>
+    <div class="tr"><span class="tl">% Ocupación:</span><span class="tv">${pct}%</span></div>
+    <div class="tr"><span class="tl">Total SKUs:</span><span class="tv">${total}</span></div>
+    <div class="tr"><span class="tl">Max SKUs/slot:</span><span class="tv">${mx}</span></div>
+    <div class="tr"><span class="tl">Qty total:</span><span class="tv">${b.qty.toLocaleString()}</span></div>
+    <div class="tr"><span class="tl">Disponible:</span><span class="tv">${b.avail.toLocaleString()}</span></div>
+    ${volHtmlTip}
+    ${lastPA?`<div class="tr" style="margin-top:4px;border-top:1px solid #F5F5F5;padding-top:4px"><span class="tl">${procIcon}:</span><span class="tv" style="${lastPAUnknown?'color:#999999;font-style:italic':'color:#F5A623'};font-family:monospace">${lastPA}</span></div><div class="tr"><span class="tl">Fecha:</span><span class="tv" style="color:#999999">${lastPADate}</span></div>`:''}
+  `;
+  tip.style.left=(e.clientX+14)+'px';
+  tip.style.top=(e.clientY-10)+'px';
+  tip.classList.add('vis');
+  document.getElementById('s-zone').textContent=b.zone;
+  document.getElementById('s-aisle').textContent=b.aisle;
+  document.getElementById('s-bay').textContent=b.bay;
+  document.getElementById('s-msg').textContent=`${b.n_slots} slots · ${b.qty.toLocaleString()} unid · ${b.avail.toLocaleString()} disp`;
+});
+mapwrap.addEventListener('mouseleave',()=>tip.classList.remove('vis'));
+
+// ── Click → detalle ───────────────────────────────────────────────────────
+mapwrap.addEventListener('click',e=>{
+  const cell=e.target.closest('[data-key]');
+  if(!cell) return;
+  const bayKey=cell.dataset.key;
+  const level=cell.dataset.level!=null?parseInt(cell.dataset.level):null;
+  const slotId=cell.dataset.slot;
+  tip.classList.remove('vis');
+  if(level!==null&&!slotId){
+    // RK: celda de nivel → modal con todas las posiciones de ese bay×nivel
+    abrirBayLevelModal(bayKey,level);
+  } else if(slotId){
+    // BL: celda de slot → modal de slot individual
+    abrirSlotModal(slotId,bayKey);
+  } else {
+    // Celda vacía → panel lateral
+    if(selKey){ document.querySelectorAll(`[data-key="${CSS.escape(selKey)}"]`).forEach(el=>el.classList.remove('sel')); }
+    if(bayKey===selKey){ selKey=null; renderDetail(null,null); return; }
+    selKey=bayKey;
+    document.querySelectorAll(`[data-key="${CSS.escape(selKey)}"]`).forEach(el=>el.classList.add('sel'));
+    renderDetail(bayMap[selKey],selKey);
+  }
+});
+
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') cerrarModal(); });
+
+// ── Modal de slot ─────────────────────────────────────────────────────────
+function cerrarModal(){
+  document.getElementById('slot-modal').classList.remove('vis');
+}
+
+function _skuCard(sk, smData, qty, avail){
+  const cat=CATALOG[sk]||{};
+  const name=cat.title||cat.name||cat.descripcion||'';
+  const brand=cat.brand||'';
+  const img=cat.img||'';
+  const dias=smData[sk];
+  const sinBadge=dias!=null?(dias>=60?`<span style="color:#F23D4F;font-size:9px">⏱ ${dias}d sin mov</span>`:dias>=30?`<span style="color:#F5A623;font-size:9px">⏱ ${dias}d sin mov</span>`:''):'';
+  const imgEl=img
+    ?`<img src="${img}" alt="" style="width:52px;height:52px;object-fit:contain;border-radius:4px;background:#EBEBEB;flex-shrink:0" onerror="this.style.display='none'">`
+    :`<div style="width:52px;height:52px;border-radius:4px;background:#F5F5F5;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px">📦</div>`;
+  const qtyBadge=qty!=null
+    ?`<span style="padding:2px 7px;border-radius:10px;background:#EBF2FF;color:#3483FA;font-size:10px;font-weight:700;border:1px solid #2968C8">${qty.toLocaleString()} u</span>`
+    :'';
+  const availBadge=avail!=null
+    ?`<span style="padding:2px 7px;border-radius:10px;background:#EBEBEB;color:#00A650;font-size:9px;border:1px solid #238636">${avail.toLocaleString()} disp</span>`
+    :'';
+  return `<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #D9D9D9;align-items:flex-start">
+    ${imgEl}
+    <div style="flex:1;min-width:0">
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:3px">
+        <span style="font-family:monospace;font-size:10px;color:#3483FA;font-weight:700">${sk}</span>
+        ${sinBadge}
+      </div>
+      ${name?`<div style="font-size:10px;color:#333333;margin-bottom:3px;line-height:1.3">${name}</div>`:''}
+      ${brand?`<div style="font-size:9px;color:#666666;margin-bottom:4px">${brand}</div>`:''}
+      ${(qtyBadge||availBadge)?`<div style="display:flex;gap:5px;flex-wrap:wrap">${qtyBadge}${availBadge}</div>`:''}
+    </div>
+  </div>`;
+}
+
+function abrirBayLevelModal(bayKey,lvl){
+  const b=bayMap[bayKey];
+  const modal=document.getElementById('slot-modal');
+  const title=document.getElementById('modal-title');
+  const body=document.getElementById('modal-body');
+  const [zone,aisle,bay]=bayKey.split('-');
+  title.textContent=`${zone} · Pasillo ${aisle} · Bay ${bay} · Nivel L${lvl}`;
+  if(!b){ body.innerHTML=`<div style="color:#666666;font-size:11px;text-align:center;padding:20px">Bay no encontrado</div>`; modal.classList.add('vis'); return; }
+  const levelSlots=b.slots.filter(s=>s.level===lvl).sort((a,z)=>a.pos-z.pos).filter(s=>s.skus.length>0);
+  if(!levelSlots.length){ body.innerHTML=`<div style="color:#666666;font-size:11px;text-align:center;padding:20px">Nivel vacío</div>`; modal.classList.add('vis'); return; }
+  const rows=levelSlots.map(slot=>{
+    const col=skuColor(slot.skus.length);
+    const smData=SINMOV[slot.id]||{};
+    const skuRows=slot.skus.map(sk=>{const q=slot.sku_qtys&&slot.sku_qtys[sk];return _skuCard(sk,smData,q?q.qty:null,q?q.avail:null);}).join('');
+    return `<div style="margin-bottom:10px;padding:10px;background:#F5F5F5;border-radius:6px;border-left:3px solid ${col}">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span style="font-family:monospace;font-size:10px;font-weight:700;color:${col}">${slot.id}</span>
+        <span style="font-size:9px;color:#999999">${slot.skus.length} SKU${slot.skus.length!==1?'s':''} · ${slot.qty||0} u · ${slot.avail||0} disp</span>
+      </div>
+      ${skuRows}
+    </div>`;
+  }).join('');
+  body.innerHTML=rows;
+  modal.classList.add('vis');
+}
+
+function abrirSlotModal(slotId, bayKey){
+  const b = bayMap[bayKey];
+  const slot = b ? b.slots.find(s=>s.id===slotId) : null;
+  const modal = document.getElementById('slot-modal');
+  const title = document.getElementById('modal-title');
+  const body  = document.getElementById('modal-body');
+
+  title.textContent = slotId;
+
+  if(!slot || slot.skus.length===0){
+    body.innerHTML=`<div style="color:#666666;font-size:11px;text-align:center;padding:20px">Ubicación vacía</div>`;
+    modal.classList.add('vis');
+    return;
+  }
+
+  const smData = SINMOV[slotId] || {};
+  const rows = slot.skus.map(sk=>{const q=slot.sku_qtys&&slot.sku_qtys[sk];return _skuCard(sk,smData,q?q.qty:slot.qty,q?q.avail:slot.avail);}).join('');
+
+  const slotCap = b.zone==='BL'?1:6;
+  const pctBar = Math.min(Math.round(slot.skus.length/slotCap*100),100);
+  const col = b.zone==='BL'?blSkuColor(slot.skus.length):skuColor(slot.skus.length);
+
+  body.innerHTML = `
+    <div style="display:flex;gap:16px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #D9D9D9">
+      <div style="text-align:center">
+        <div style="font-size:22px;font-weight:700;color:${col}">${slot.skus.length}</div>
+        <div style="font-size:9px;color:#999999">SKUs / ${slotCap}</div>
+      </div>
+      <div style="flex:1">
+        <div style="height:6px;background:#F5F5F5;border-radius:3px;margin-bottom:6px">
+          <div style="height:100%;width:${pctBar}%;background:${col};border-radius:3px"></div>
+        </div>
+        <div style="font-size:9px;color:#666666">${slot.qty||0} unidades · ${slot.avail||0} disponibles</div>
+        ${(slot.dim_w||slot.dim_h||slot.dim_l)?`<div style="font-size:8px;color:#888888;margin-top:3px">📐 ${[slot.dim_l?slot.dim_l+'cm L':null,slot.dim_w?slot.dim_w+'cm W':null,slot.dim_h?slot.dim_h+'cm H':null,slot.dim_kg?slot.dim_kg+'kg':null].filter(Boolean).join(' · ')}</div>`:''}
+      </div>
+    </div>
+    <div style="font-size:10px;font-weight:700;color:#999999;margin-bottom:6px">PRODUCTOS EN ESTA UBICACIÓN</div>
+    ${rows}
+  `;
+  modal.classList.add('vis');
+}
+
+// ── Buscador de ubicaciones (por slot individual) ─────────────────────────
+let _rankSort='az';
+
+// Áreas del buscador
+let RANK_AREAS=[
+  {id:'BL',  label:'BL — Bulk Locations', color:'#4da6ff',  test:(b)=>b.zone==='BL'},
+  {id:'ZA',  label:'RK — Z-A  (P005–P012)', color:'#00A650', test:(b)=>b.zone==='RK'&&b.aisle>=5&&b.aisle<=12},
+  {id:'ZA2', label:'RK — Z-A2 (P013–P018)', color:'#56d364', test:(b)=>b.zone==='RK'&&b.aisle>=13&&b.aisle<=18},
+  {id:'ZB',  label:'RK — Z-B  (P101–P123)', color:'#3483FA', test:(b)=>b.zone==='RK'&&b.aisle>=101&&b.aisle<=123},
+];
+let _rankAreaOpen=new Set(RANK_AREAS.map(a=>a.id));
+
+function renderRanking(){
+  const dhdrTxt=document.getElementById('det-hdr-txt'); if(dhdrTxt) dhdrTxt.textContent='Buscador de Ubicaciones';
+  const detBack=document.getElementById('det-back'); if(detBack) detBack.style.display='none';
+  document.getElementById('det-body').innerHTML=`
+    <div style="padding:6px 8px;border-bottom:1px solid #F0F0F0;position:sticky;top:0;background:#fff;z-index:2">
+      <input id="rank-q" type="text" placeholder="Ej: RK-0-005-001-06-01, BL-0-001…" autocomplete="off"
+        style="width:100%;background:#F5F5F5;border:1px solid #D9D9D9;border-radius:4px;font-size:10px;
+               font-family:monospace;padding:4px 8px;outline:none;color:#333333;box-sizing:border-box"
+        oninput="rankFilter()" />
+      <div style="display:flex;gap:4px;margin-top:5px;flex-wrap:wrap">
+        <button onclick="rankSetSort('az')"  id="rsrt-az"  class="rank-sort-btn rank-sort-on">A→Z</button>
+        <button onclick="rankSetSort('za')"  id="rsrt-za"  class="rank-sort-btn">Z→A</button>
+        <button onclick="rankSetSort('occ')" id="rsrt-occ" class="rank-sort-btn">Mayor ocup.</button>
+        <button onclick="rankSetSort('free')"id="rsrt-free"class="rank-sort-btn">Vacías primero</button>
+      </div>
+      <div id="rank-meta" style="font-size:9px;color:#999999;margin-top:4px"></div>
+    </div>
+    <div id="rank-list" style="overflow-y:auto;max-height:calc(100vh - 270px)"></div>`;
+  rankFilter();
+}
+
+function rankSetSort(s){
+  _rankSort=s;
+  document.querySelectorAll('.rank-sort-btn').forEach(b=>b.classList.remove('rank-sort-on'));
+  const el=document.getElementById('rsrt-'+s); if(el) el.classList.add('rank-sort-on');
+  rankFilter();
+}
+
+function _buildSlotList(){
+  // Lista plana de todos los slots con metadatos
+  const slots=[];
+  Object.values(bayMap).forEach(b=>{
+    const slotCap=b.zone==='BL'?1:6;
+    b.slots.forEach(s=>{
+      const n=s.skus.length;
+      const pct=Math.min(Math.round(n/slotCap*100),100);
+      slots.push({id:s.id, skus:s.skus, n, pct, slotCap, bay:b, level:s.level, pos:s.pos,
+                  sku_qtys:s.sku_qtys||{}});
+    });
+  });
+  return slots;
+}
+
+function rankFilter(){
+  const q=(document.getElementById('rank-q')?.value||'').toLowerCase().trim();
+  let all=_buildSlotList();
+
+  if(q) all=all.filter(e=>e.id.toLowerCase().includes(q)||e.skus.some(sk=>sk.toLowerCase().includes(q)));
+
+  if(_rankSort==='az')   all.sort((a,b)=>a.id.localeCompare(b.id));
+  if(_rankSort==='za')   all.sort((a,b)=>b.id.localeCompare(a.id));
+  if(_rankSort==='occ')  all.sort((a,b)=>b.pct-a.pct||b.n-a.n);
+  if(_rankSort==='free') all.sort((a,b)=>a.pct-b.pct||a.n-b.n);
+
+  const meta=document.getElementById('rank-meta');
+  if(meta) meta.textContent=`${all.length.toLocaleString()} ubicaciones encontradas`;
+
+  const list=document.getElementById('rank-list'); if(!list) return;
+
+  // Si hay búsqueda activa: lista plana sin secciones
+  if(q){
+    const visible=all.slice(0,300);
+    list.innerHTML=visible.map(e=>_slotRow(e)).join('');
+    if(all.length>300) list.innerHTML+=`<div style="font-size:9px;color:#999;text-align:center;padding:8px">Mostrando 300 de ${all.length} — refina la búsqueda</div>`;
+    return;
+  }
+
+  // Sin búsqueda: agrupar por área con acordeón
+  let html='';
+  RANK_AREAS.forEach(area=>{
+    const areaSlots=all.filter(e=>area.test(e.bay));
+    if(!areaSlots.length) return;
+    const occ=areaSlots.filter(e=>e.n>0).length;
+    const pctArea=Math.round(occ/areaSlots.length*100);
+    const open=_rankAreaOpen.has(area.id);
+    html+=`<div style="border-bottom:1px solid #E8E8E8">
+      <div onclick="rankToggleArea('${area.id}')" style="display:flex;align-items:center;gap:6px;padding:5px 8px;background:#F8F8F8;cursor:pointer;user-select:none"
+        onmouseover="this.style.background='#F0F0F0'" onmouseout="this.style.background='#F8F8F8'">
+        <span style="font-size:9px;color:#AAAAAA">${open?'▼':'▶'}</span>
+        <span style="font-size:10px;font-weight:700;color:${area.color}">${area.label}</span>
+        <span style="margin-left:auto;font-size:9px;color:#999999">${occ.toLocaleString()}/${areaSlots.length.toLocaleString()} ocup · ${pctArea}%</span>
+      </div>
+      <div id="rank-area-${area.id}" style="display:${open?'block':'none'}">`;
+    const visible=areaSlots.slice(0,400);
+    html+=visible.map(e=>_slotRow(e)).join('');
+    if(areaSlots.length>400) html+=`<div style="font-size:9px;color:#999;text-align:center;padding:6px">Mostrando 400 de ${areaSlots.length} — usa el buscador</div>`;
+    html+=`</div></div>`;
+  });
+  list.innerHTML=html;
+}
+
+function rankToggleArea(id){
+  _rankAreaOpen.has(id)?_rankAreaOpen.delete(id):_rankAreaOpen.add(id);
+  const panel=document.getElementById('rank-area-'+id);
+  if(panel) panel.style.display=_rankAreaOpen.has(id)?'block':'none';
+  const arrow=panel?.previousElementSibling?.querySelector('span');
+  if(arrow) arrow.textContent=_rankAreaOpen.has(id)?'▼':'▶';
+}
+
+function _slotRow(e){
+  const {id, skus, n, pct, slotCap, bay:b, level, pos} = e;
+  const col = b.zone==='BL' ? blSkuColor(n) : skuColor(n);
+  const pctColor = pct>=90?'#F23D4F':pct>=60?'#F5A623':n>0?'#00A650':'#CCCCCC';
+  const smData=SINMOV[id]||{};
+  const maxDias=Object.values(smData).length?Math.max(...Object.values(smData)):0;
+  const smBadge=maxDias>=30?`<span style="font-size:7px;padding:1px 3px;border-radius:2px;background:#3d2a0a;color:#F5A623;margin-left:3px">⏱${maxDias}d</span>`:'';
+  const bayKey=`${b.zone}-${b.aisle}-${b.bay}`;
+
+  // SKU + responsable
+  const skuHtml = n===0
+    ? `<span style="font-size:8px;color:#CCCCCC">Vacía</span>`
+    : skus.map(sk=>{
+        const cat=CATALOG[sk];
+        const resp=RESP[`${id}|${sk}`];
+        const procIcon=resp?.proc==='transfer'?'🔄':'📦';
+        const hasName=resp&&resp.name;
+        const who=hasName?resp.name:(resp?`Op.#${resp.user}`:null);
+        return `<div style="font-size:8px;color:#333;padding:1px 0;font-family:monospace">${sk}${cat?.title?` <span style="color:#666;font-family:sans-serif;font-size:7px">${cat.title.slice(0,26)}${cat.title.length>26?'…':''}</span>`:''}
+          ${who?`<span style="color:${hasName?'#F5A623':'#999'};font-size:7px;font-family:sans-serif">&nbsp;${procIcon} ${who}${resp.date?` · ${resp.date}`:''}</span>`:''}
+        </div>`;
+      }).join('');
+
+  return `<div onclick="abrirSlotModal('${id}','${bayKey}')" style="display:flex;align-items:flex-start;gap:6px;padding:5px 8px;border-bottom:1px solid #F5F5F5;cursor:pointer;background:${n>0?col+'0a':'#FFFFFF'}"
+    onmouseover="this.style.background='#F5F5F5'" onmouseout="this.style.background='${n>0?col+'0a':'#FFFFFF'}'">
+    <div style="flex-shrink:0;width:30px;text-align:center">
+      <div style="font-size:11px;font-weight:700;color:${col||'#CCCCCC'}">${n}</div>
+      <div style="height:3px;background:#EEE;border-radius:2px;margin-top:2px"><div style="height:100%;width:${pct}%;background:${col||'#EEE'};border-radius:2px"></div></div>
+      <div style="font-size:7px;color:${pctColor};margin-top:1px">${pct}%</div>
+    </div>
+    <div style="flex:1;min-width:0">
+      <div style="font-family:monospace;font-size:9px;font-weight:700;color:${n>0?col:'#AAAAAA'}">${id}${smBadge}</div>
+      <div style="margin-top:2px">${skuHtml}</div>
+    </div>
+  </div>`;
+}
+
+function rankClick(key){
+  if(selKey) document.querySelectorAll(`[data-key="${CSS.escape(selKey)}"]`).forEach(el=>el.classList.remove('sel'));
+  selKey=key;
+  document.querySelectorAll(`[data-key="${CSS.escape(selKey)}"]`).forEach(el=>el.classList.add('sel'));
+  renderDetail(bayMap[selKey],selKey);
+  const el=document.querySelector(`[data-key="${CSS.escape(selKey)}"]`);
+  if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+// ── Panel de detalle ──────────────────────────────────────────────────────
+function renderDetail(b,key){
+  const body=document.getElementById('det-body');
+  const dhdr=document.getElementById('det-hdr');
+  if(!b&&!key){
+    renderRanking();
+    return;
+  }
+  if(!b){
+    const [zone,aisleStr,bayStr]=key.split('-');
+    const aisle=parseInt(aisleStr),bay=parseInt(bayStr);
+    const dhdrTxt=document.getElementById('det-hdr-txt'); if(dhdrTxt) dhdrTxt.textContent=`${zone} · Pasillo ${aisle} · Bay ${bay}`;
+    const detBack=document.getElementById('det-back'); if(detBack) detBack.style.display='inline';
+    body.innerHTML=`
+      <div class="det-bay">${zone}-0-${String(aisle).padStart(3,'0')}-${String(bay).padStart(3,'0')}-xx-xx</div>
+      <div style="margin-top:16px;text-align:center">
+        <div style="font-size:22px;margin-bottom:6px">📦</div>
+        <div style="color:#00A650;font-size:11px;font-weight:600">Ubicación Disponible</div>
+        <div style="color:#999999;font-size:9px;margin-top:4px">Sin stock asignado en este bay</div>
+      </div>`;
+    return;
+  }
+  const dhdrTxt2=document.getElementById('det-hdr-txt'); if(dhdrTxt2) dhdrTxt2.textContent=`${b.zone} · Pasillo ${b.aisle} · Bay ${b.bay}`;
+  const detBack2=document.getElementById('det-back'); if(detBack2) detBack2.style.display='inline';
+  const total=b.slots.reduce((a,s)=>a+s.skus.length,0);
+  const slotsOcc2=b.slots.filter(s=>s.skus.length>0).length;
+  const pct=Math.round(slotsOcc2/b.n_slots*100);
+
+  // Nomenclaturas del bay (tipo/clase únicas entre sus slots)
+  const tiposSet=new Set(b.slots.map(s=>s.tipo||'').filter(Boolean));
+  const clasesSet=new Set(b.slots.map(s=>s.clase||'').filter(Boolean));
+  // NT desde tipo, clase o ID
+  const isNT=[...tiposSet,...clasesSet].some(v=>v.toUpperCase().includes('NT'))
+    || b.slots.some(s=>s.id.toUpperCase().includes('-NT-'));
+  const nomBadges=[...tiposSet].map(t=>{
+    const nt=t.toUpperCase().includes('NT');
+    return `<span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:9px;font-weight:700;
+      background:${nt?'#EBF2FF':'#F5F5F5'};color:${nt?'#3483FA':'#666666'};
+      border:1px solid ${nt?'#2968C8':'#D9D9D9'};font-family:monospace">${t}</span>`;
+  }).join(' ');
+  const claseBadges=[...clasesSet].map(c=>`<span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:9px;
+    background:#F5F5F5;color:#666666;border:1px solid #D9D9D9;font-family:monospace">${c}</span>`).join(' ');
+
+  body.innerHTML=`
+    <div class="det-bay">${b.zone}-0-${String(b.aisle).padStart(3,'0')}-${String(b.bay).padStart(3,'0')}-xx-xx
+      ${isNT?'<span style="margin-left:6px;padding:1px 6px;border-radius:8px;background:#EBF2FF;color:#3483FA;font-size:8px;border:1px solid #2968C8">🏷 No Toteable</span>':''}
+    </div>
+    ${(nomBadges||claseBadges)?`<div style="margin-bottom:6px;display:flex;flex-wrap:wrap;gap:4px;align-items:center">
+      <span style="font-size:8px;color:#999999">Nomenclatura:</span>${nomBadges}${claseBadges}
+    </div>`:''}
+    <div class="det-stat">
+      <b>${b.n_slots}</b> slots &nbsp;·&nbsp; <b>${slotsOcc2}</b>/<b>${b.n_slots}</b> ocupados &nbsp;·&nbsp; <b>${pct}%</b>
+      &nbsp;·&nbsp; <b>${b.qty.toLocaleString()}</b> u · <b>${b.avail.toLocaleString()}</b> disp
+    </div>
+    ${b.slots.sort((a,z)=>z.skus.length-a.skus.length).map(s=>{
+      const slotCap=b.zone==='BL'?1:6;
+      const n=s.skus.length, p=Math.min(Math.round(n/slotCap*100),100), col=b.zone==='BL'?blSkuColor(n):skuColor(n);
+      const vd=VOLDATA[s.id];
+      const volHtml=vd?`
+        <div style="margin-bottom:4px;padding:3px 6px;background:#EBEBEB;border-radius:3px;border-left:2px solid #D9D9D9">
+          <div style="display:flex;gap:8px;align-items:center;font-size:8px;color:#666666;margin-bottom:2px">
+            <span title="Alto × Ancho × Profundidad">📐 ${vd.alto_cm}×${vd.ancho_cm}×${vd.prof_cm} cm</span>
+            <span title="Peso máximo">⚖️ ${vd.peso_max_kg} kg max</span>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <div style="flex:1;height:3px;background:#F5F5F5;border-radius:2px;overflow:hidden">
+              <div style="height:100%;width:${Math.min(vd.pct_vol,100)}%;background:${vd.pct_vol>85?'#F23D4F':vd.pct_vol>60?'#F5A623':'#00A650'};border-radius:2px"></div>
+            </div>
+            <span style="font-size:8px;color:${vd.pct_vol>85?'#F23D4F':vd.pct_vol>60?'#F5A623':'#00A650'};white-space:nowrap;font-weight:700">${vd.pct_vol}%</span>
+            <span style="font-size:8px;color:#999999;white-space:nowrap">${vd.vol_usado_l.toFixed(2)} / ${vd.volumen_l} L</span>
+          </div>
+          ${vd.peso_usado_kg>0?`<div style="font-size:8px;color:#666666;margin-top:2px">Peso: <b style="color:#333333">${vd.peso_usado_kg} kg</b> / ${vd.peso_max_kg} kg</div>`:''}
+        </div>`:'';
+      return `<div class="slot-card" style="border-left:3px solid ${n>0?col:'#D9D9D9'};background:${n>0?col+'18':'#EBEBEB'}">
+        <div class="slot-addr" style="color:${n>0?col:'#3483FA88'}">${s.id}</div>
+        <div class="occ-bar"><div class="occ-fill" style="width:${p}%;background:${col}"></div></div>
+        <div style="font-size:9px;color:${col};margin-bottom:5px">${n}/${slotCap} SKUs &nbsp;·&nbsp; ${s.qty} u &nbsp;·&nbsp; ${s.avail} disp</div>
+        ${volHtml}
+        ${s.skus.map(sk=>{
+          const cat=CATALOG[sk];
+          const resp=RESP[`${s.id}|${sk}`];
+          const smDias=(SINMOV[s.id]||{})[sk];
+          const smBadge=smDias!=null?(smDias>=30?`<span style="font-size:8px;padding:1px 5px;border-radius:3px;background:#3d2a0a;color:#F5A623;border:1px solid #F5A62344;margin-left:4px">⏱ ${smDias}d sin mov</span>`:(smDias>=14?`<span style="font-size:8px;padding:1px 5px;border-radius:3px;background:#E6F7EE;color:#6e9b6e;border:1px solid #00A65044;margin-left:4px">${smDias}d</span>`:'')):'';
+          const proc=resp?.proc||'put_away';
+          const procIcon=proc==='transfer'?'🔄 Transfer':'📦 Put Away';
+          const hasName=resp&&resp.name;
+          const displayName=hasName?resp.name:(resp?`Op. #${resp.user}`:'');
+          const respHtml=resp
+            ?`<div class="prod-resp">${procIcon}: <span class="${hasName?'ruser':''}" style="${hasName?'':'color:#999999;font-style:italic;font-family:monospace'}">${displayName}</span><span class="rdate">&nbsp;· ${resp.date}</span></div>`
+            :'';
+          if(cat&&cat.title){
+            const url=cat.item_id?`https://www.mercadolibre.cl/p/${cat.item_id}`:'';
+            const imgHtml=cat.img
+              ?`<img class="prod-img" src="${cat.img}" alt="" onerror="this.style.display='none'">`
+              :'';
+            return `<div style="margin-bottom:4px;padding:4px;background:#F5F5F5;border-radius:4px">
+              <div class="prod-row">
+                ${imgHtml}
+                <div class="prod-info">
+                  <div class="prod-title">${url?`<a href="${url}" target="_blank" style="color:#3483FA;text-decoration:none">${cat.title}</a>`:cat.title}</div>
+                  <div class="prod-meta"><span class="sku-chip">${sk}</span>&nbsp;${cat.brand||''}${smBadge}</div>
+                  ${respHtml}
+                </div>
+              </div>
+            </div>`;
+          }
+          return `<div style="margin-bottom:4px;padding:4px;background:#F5F5F5;border-radius:4px">
+            <div class="prod-meta"><span class="sku-chip">${sk}</span>${smBadge}</div>
+            ${respHtml}
+          </div>`;
+        }).join('')}
+      </div>`;
+    }).join('')}
+  `;
+}
+
+// ── Tab switching ─────────────────────────────────────────────────────────
+function switchTab(tab){
+  document.getElementById('mapa-view').style.display = tab==='mapa' ? 'flex' : 'none';
+  document.getElementById('sug-view').style.display  = tab==='sug'  ? 'flex' : 'none';
+  document.getElementById('inv-view').style.display  = tab==='inv'  ? 'flex' : 'none';
+  document.getElementById('chk-view').style.display  = tab==='chk'  ? 'flex' : 'none';
+  document.querySelectorAll('.dash-tab').forEach((b,i)=>{
+    b.classList.toggle('active', ['mapa','inv','chk','sug'][i]===tab);
+  });
+  if(tab==='sug' && !SUG_READY) buildSugIndex();
+  if(tab==='inv'){
+    if(!CATALOG || Object.keys(CATALOG).length===0) loadCatalog().then(()=>{ if(!INV_READY) buildInvIndex(); });
+    else if(!INV_READY) buildInvIndex();
+  }
+  if(tab==='chk'){
+    loadCheckin();
+    if(CHK_AUTO) clearInterval(CHK_AUTO);
+    CHK_AUTO=setInterval(loadCheckin, 30000);
+  } else {
+    if(CHK_AUTO){ clearInterval(CHK_AUTO); CHK_AUTO=null; }
+  }
+}
+
+// ── Inventario SKU ────────────────────────────────────────────────────────
+let INV_READY=false, INV_ALL=[], INV_FILTER={areas:new Set(['RS','RK','BL']), multi:false, q:''};
+let INV_SORT={col:'locs',dir:-1}, INV_SEL=null;
+
+function buildInvIndex(){
+  const skuMap={};
+  BAYS.forEach(b=>{
+    const zone = b.zone||b.area||'';
+    b.slots.forEach(s=>{
+      if(!s.skus||!s.skus.length) return;
+      s.skus.forEach(sk=>{
+        if(!skuMap[sk]) skuMap[sk]={sku:sk, qty:0, locs:[], areas:new Set()};
+        skuMap[sk].qty += (s.qty||0);
+        skuMap[sk].locs.push({
+          id:s.id, area:zone, qty:s.qty||0,
+          pct_vol: (VOLDATA[s.id]||{}).pct_vol??null,
+          skus_count: s.skus.length
+        });
+        skuMap[sk].areas.add(zone);
+      });
+    });
+  });
+  INV_ALL = Object.values(skuMap).map(o=>{
+    const cat=CATALOG[o.sku]||{};
+    return {
+      sku:o.sku, ean:cat.ean||'', title:cat.title||'', brand:cat.brand||'',
+      domain:cat.domain||cat.category||'', img:cat.img||'',
+      item_id:cat.item_id||'',
+      qty:o.qty, locs:o.locs, locs_n:o.locs.length,
+      area: [...o.areas].sort().join('+')
+    };
+  });
+  invRender();
+  INV_READY=true;
+}
+
+function invFiltrar(){
+  INV_FILTER.q=(document.getElementById('inv-search').value||'').toLowerCase().trim();
+  invRender();
+}
+function invToggleArea(a){
+  if(INV_FILTER.areas.has(a)) INV_FILTER.areas.delete(a);
+  else INV_FILTER.areas.add(a);
+  const btn=document.getElementById('inv-f-'+a.toLowerCase());
+  btn.classList.toggle('on', INV_FILTER.areas.has(a));
+  invRender();
+}
+function invToggleMulti(){
+  INV_FILTER.multi=!INV_FILTER.multi;
+  document.getElementById('inv-f-multi').classList.toggle('on', INV_FILTER.multi);
+  invRender();
+}
+function invSort(col){
+  if(INV_SORT.col===col) INV_SORT.dir*=-1;
+  else { INV_SORT.col=col; INV_SORT.dir = col==='title'||col==='brand'||col==='sku'||col==='area' ? 1 : -1; }
+  document.querySelectorAll('#inv-tbl th').forEach(th=>{
+    th.classList.remove('sort-asc','sort-desc');
+  });
+  const cols=['sku','title','brand','area','qty','locs'];
+  const idx=cols.indexOf(col);
+  if(idx>=0){
+    const ths=document.querySelectorAll('#inv-tbl th');
+    ths[idx].classList.add(INV_SORT.dir===1?'sort-asc':'sort-desc');
+  }
+  invRender();
+}
+
+function invRender(){
+  const {q, areas, multi} = INV_FILTER;
+  let list = INV_ALL.filter(o=>{
+    // area filter: al menos una ubicación en las áreas activas
+    const hasArea = o.locs.some(l=>areas.has(l.area));
+    if(!hasArea) return false;
+    // multi-sku filter
+    if(multi && o.locs_n<2) return false;
+    // text filter
+    if(q && !o.sku.toLowerCase().includes(q) && !o.ean.includes(q) &&
+       !o.title.toLowerCase().includes(q) && !o.brand.toLowerCase().includes(q) &&
+       !o.domain.toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  // sort
+  const {col,dir} = INV_SORT;
+  list.sort((a,b)=>{
+    let va=a[col==='locs'?'locs_n':col], vb=b[col==='locs'?'locs_n':col];
+    if(typeof va==='string') return dir*va.localeCompare(vb);
+    return dir*(va-vb);
+  });
+
+  document.getElementById('inv-count').textContent=`${list.length.toLocaleString()} SKUs`;
+
+  const tbody=document.getElementById('inv-tbody');
+  tbody.innerHTML = list.slice(0,500).map(o=>{
+    const areaTagsHtml = [...new Set(o.locs.map(l=>l.area))].map(a=>
+      `<span class="inv-area-tag inv-area-${a.toLowerCase()}">${a}</span>`).join(' ');
+    return `<tr class="${INV_SEL===o.sku?'inv-sel':''}" onclick="invSelSKU('${o.sku}')">
+      <td><span class="inv-sku">${o.sku}</span></td>
+      <td><span style="font-family:monospace;font-size:9px;color:#666666">${o.ean||'<span style="color:#D9D9D9">—</span>'}</span></td>
+      <td><span class="inv-title" title="${o.title||''}">${o.title||'<span style="color:#999999">—</span>'}</span></td>
+      <td><span class="inv-brand">${o.brand||'<span style="color:#999999">—</span>'}</span></td>
+      <td>${areaTagsHtml}</td>
+      <td><span class="inv-qty">${o.qty.toLocaleString()}</span></td>
+      <td><span class="inv-locs">${o.locs_n}</span></td>
+    </tr>`;
+  }).join('');
+  if(list.length>500){
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td colspan="6" style="text-align:center;padding:10px;color:#999999;font-size:9px">Mostrando 500 de ${list.length.toLocaleString()} — refina la búsqueda</td>`;
+    tbody.appendChild(tr);
+  }
+}
+
+function invSelSKU(sku){
+  INV_SEL=sku;
+  // update selected row highlight
+  document.querySelectorAll('#inv-tbody tr').forEach(tr=>{
+    const skuEl=tr.querySelector('.inv-sku');
+    tr.classList.toggle('inv-sel', skuEl&&skuEl.textContent===sku);
+  });
+
+  const o=INV_ALL.find(x=>x.sku===sku);
+  if(!o) return;
+  const cat=CATALOG[sku]||{};
+  const imgId=`img-inv-${sku.replace(/[^a-z0-9]/gi,'_')}`;
+  const imgHtml=cat.item_id
+    ?`<img id="${imgId}" src="" style="width:64px;height:64px;object-fit:contain;border-radius:4px;border:1px solid #D9D9D9;background:#EBEBEB;display:block;margin:0 auto 8px" onerror="this.style.display='none'">`
+    :(cat.img?`<img src="${cat.img}" style="width:64px;height:64px;object-fit:contain;border-radius:4px;border:1px solid #D9D9D9;background:#EBEBEB;display:block;margin:0 auto 8px" onerror="this.style.display='none'">`:'' );
+  if(cat.item_id) setTimeout(()=>fetchMeliImg(cat.item_id, imgId), 100);
+  const link=cat.item_id?`<a href="https://www.mercadolibre.cl/p/${cat.item_id}" target="_blank" style="color:#3483FA;font-size:10px">Ver en Meli ↗</a>`:'';
+
+  const locsHtml=o.locs.map(l=>{
+    const pct=l.pct_vol!==null?l.pct_vol:null;
+    const barColor=pct!==null?volColor(pct):'#D9D9D9';
+    const barW=pct!==null?pct:0;
+    return `<div class="inv-loc-card">
+      <div class="inv-loc-addr">${l.id}</div>
+      <div class="inv-loc-meta">
+        <span class="inv-area-tag inv-area-${(l.area||'').toLowerCase()}">${l.area||'?'}</span>
+        <span>Stock: <b style="color:#F5A623">${l.qty}</b></span>
+        <span>SKUs en slot: <b>${l.skus_count}</b></span>
+        ${pct!==null?`<span style="color:${barColor}">Vol: ${pct}%</span>`:''}
+      </div>
+      ${pct!==null?`<div style="margin-top:4px;height:3px;background:#F5F5F5;border-radius:2px"><div style="width:${barW}%;height:100%;background:${barColor};border-radius:2px"></div></div>`:''}
+    </div>`;
+  }).join('');
+
+  document.getElementById('inv-det-hdr').textContent=sku;
+  document.getElementById('inv-det-body').innerHTML=`
+    ${imgHtml}
+    <div style="margin-bottom:8px;text-align:center">
+      <div style="font-size:11px;font-weight:700;color:#333333;margin-bottom:2px">${cat.title||'Sin título'}</div>
+      ${cat.brand?`<div style="font-size:9px;color:#666666">${cat.brand}</div>`:''}
+      ${cat.domain?`<div style="font-size:9px;color:#999999">${cat.domain}</div>`:''}
+      ${cat.ean?`<div style="font-size:9px;color:#999999;font-family:monospace;margin-top:3px">EAN: <span style="color:#666666">${cat.ean}</span></div>`:''}
+      ${link}
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:10px;justify-content:center">
+      <div style="text-align:center;background:#F5F5F5;border-radius:4px;padding:6px 12px">
+        <div style="font-size:16px;font-weight:700;color:#F5A623">${o.qty.toLocaleString()}</div>
+        <div style="font-size:8px;color:#999999">STOCK TOTAL</div>
+      </div>
+      <div style="text-align:center;background:#F5F5F5;border-radius:4px;padding:6px 12px">
+        <div style="font-size:16px;font-weight:700;color:#3483FA">${o.locs_n}</div>
+        <div style="font-size:8px;color:#999999">UBICACIONES</div>
+      </div>
+    </div>
+    <div style="font-size:9px;color:#999999;margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Ubicaciones</div>
+    ${locsHtml}
+  `;
+}
+
+// ── Sugerencias de Guardado ───────────────────────────────────────────────
+let SUG_READY=false, SUG_SKUS=[], SUG_SLOTS=[], SUG_SEL=null;
+
+// ── Scoring unificado ─────────────────────────────────────────────────────
+function scoreSugerencia(sl, targetSKU, targetDom, targetBrand){
+  let score=0; const tags=[];
+
+  // Consolidación mismo SKU → máxima prioridad
+  if(sl.skus.includes(targetSKU)){
+    score+=100; tags.push({cls:'sug-tag-exact',txt:'✓ Consolida mismo SKU'});
+  }else{
+    // Misma categoría
+    const slDoms=sl.skus.map(sk=>(CATALOG[sk]||{}).domain||'').filter(Boolean);
+    if(targetDom && slDoms.includes(targetDom)){ score+=30; tags.push({cls:'sug-tag-dom',txt:'Misma categoría'}); }
+    // Misma marca
+    const slBrands=sl.skus.map(sk=>(CATALOG[sk]||{}).brand||'').filter(Boolean);
+    if(targetBrand && slBrands.includes(targetBrand)){ score+=20; tags.push({cls:'sug-tag-brand',txt:'Misma marca'}); }
+  }
+
+  // Espacio disponible (volumen)
+  const pct=sl.pct_vol||0;
+  score+=Math.round((100-pct)*0.35);
+  if(!tags.length) tags.push({cls:'sug-tag-space',txt:'Espacio disponible'});
+
+  // Ubicación vacía: bonus leve
+  if(sl.num_skus===0){ score+=8; }
+
+  // Penalidades
+  if(sl.limite_skus!==null && sl.num_skus>=sl.limite_skus-1){ score-=40; tags.push({cls:'sug-tag-warn',txt:'⚠ Casi al límite SKUs'}); }
+  if(pct>=90){ score-=30; tags.push({cls:'sug-tag-warn',txt:'⚠ Vol. casi lleno'}); }
+
+  const stars=score>=120?'★★★':score>=70?'★★☆':'★☆☆';
+  return {score,tags,stars};
+}
+
+function buildSugIndex(){
+  const skuMap={};
+  BAYS.forEach(b=>{
+    b.slots.forEach(s=>{
+      if(!s.skus) return;
+      s.skus.forEach(sk=>{
+        if(!skuMap[sk]) skuMap[sk]={sku:sk,locs:0,qty:0};
+        skuMap[sk].locs++;
+        skuMap[sk].qty+=(s.qty||0);
+      });
+    });
+  });
+  SUG_SKUS=Object.values(skuMap).map(o=>{
+    const cat=CATALOG[o.sku]||{};
+    return {...o,title:cat.title||'',brand:cat.brand||'',domain:cat.domain||cat.category||''};
+  }).sort((a,b)=>b.locs-a.locs);
+
+  SUG_SLOTS=[];
+  BAYS.forEach(b=>{
+    b.slots.forEach(s=>{
+      const v=VOLDATA[s.id];
+      const pct=v?v.pct_vol:null;
+      const limSkus=v?v.limite_skus:null;
+      const numSkus=s.skus?s.skus.length:0;
+      if(limSkus!==null && numSkus>=limSkus) return;
+      if(pct!==null && pct>=98) return;
+      SUG_SLOTS.push({id:s.id,area:b.area||b.zone||'RK',skus:s.skus||[],qty:s.qty||0,pct_vol:pct,limite_skus:limSkus,num_skus:numSkus});
+    });
+  });
+
+  SUG_READY=true;
+  document.getElementById('sug-status').textContent=`${SUG_SKUS.length.toLocaleString()} SKUs · ${SUG_SLOTS.length.toLocaleString()} ubicaciones disponibles`;
+  const pend=buildPendingSKUs();
+  renderSKUList(pend.length ? pend : SUG_SKUS);
+  renderColaPendiente();
+  renderSinMovimiento();
+}
+
+// ── Ranking sin movimiento ─────────────────────────────────────────────────
+function renderSinMovimiento(){
+  const el=document.getElementById('sug-sinmov');
+  const kpi=document.getElementById('sinmov-kpi');
+  if(!el) return;
+  if(!Object.keys(SINMOV).length){
+    el.innerHTML='<div style="color:#999999;font-size:10px;padding:8px">Sin datos — corre fetch_sin_movimiento.py</div>';
+    return;
+  }
+  // Construir lista: un entry por (address, sku) con dias≥30
+  const items=[];
+  Object.entries(SINMOV).forEach(([addr,skus])=>{
+    Object.entries(skus).forEach(([sku,dias])=>{
+      if(dias>=30) items.push({addr,sku,dias});
+    });
+  });
+  items.sort((a,b)=>b.dias-a.dias);
+  if(kpi) kpi.textContent=`${items.length.toLocaleString()} SKUs en alerta`;
+  if(!items.length){
+    el.innerHTML='<div style="color:#00A650;font-size:10px;padding:8px">✓ Sin stock varado — todo se movió en los últimos 30 días</div>';
+    return;
+  }
+  const top=items.slice(0,30);
+  const rows=top.map(it=>{
+    const cat=CATALOG[it.sku];
+    const titulo=cat?.title?`<span style="color:#333333">${cat.title.substring(0,40)}${cat.title.length>40?'…':''}</span>`:'';
+    const diasCol=it.dias>=60?'#F23D4F':it.dias>=45?'#d07030':'#F5A623';
+    return `<div style="display:flex;align-items:center;gap:6px;padding:5px 6px;background:#FFFFFF;border-radius:4px;margin-bottom:3px;border-left:3px solid ${diasCol}">
+      <span style="font-size:11px;font-weight:700;color:${diasCol};min-width:32px">${it.dias}d</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:8px;font-family:monospace;color:#3483FA88;margin-bottom:1px">${it.addr}</div>
+        <div style="font-size:8px;display:flex;gap:4px;align-items:center">
+          <span class="sku-chip">${it.sku}</span>${titulo}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  el.innerHTML=rows;
+}
+
+// ── Cola de pendientes ordenada por urgencia SLA ──────────────────────────
+function renderColaPendiente(){
+  const el=document.getElementById('sug-cola');
+  if(!el) return;
+
+  // Usar PW_DATA (BT_FBM_PUTAWAY) como fuente — movables reales pendientes
+  const src=PW_DATA.length ? PW_DATA : [];
+  const urgOrder={'over':0,'warn':1,'ok':2,'unknown':3};
+  const pending=[...src].sort((a,b)=>{
+    const ua=urgOrder[a.sla]??9, ub=urgOrder[b.sla]??9;
+    if(ua!==ub) return ua-ub;
+    return (a.mins_restantes??9999)-(b.mins_restantes??9999);
+  });
+
+  if(!pending.length){
+    el.innerHTML='<div style="color:#00A650;font-size:11px;padding:16px;text-align:center">Sin movables pendientes de putaway</div>';
+    return;
+  }
+
+  const total=pending.length;
+  const over=pending.filter(g=>g.sla==='over').length;
+  const warn=pending.filter(g=>g.sla==='warn').length;
+  const nt=pending.filter(g=>g.is_nt).length;
+
+  el.innerHTML=`<div style="display:flex;gap:10px;font-size:9px;color:#999999;margin-bottom:8px;flex-wrap:wrap">
+    <span>${total} movables</span>
+    <span style="color:#F23D4F">🔴 ${over} vencidos</span>
+    <span style="color:#F5A623">⚠️ ${warn} en riesgo</span>
+    <span style="color:#3483FA">NT ${nt}</span>
+  </div>`+
+  pending.slice(0,60).map(g=>{
+    const urgBorder=g.sla==='over'?'#F23D4F':g.sla==='warn'?'#F5A623':g.is_nt?'#2968C8':'#F5F5F5';
+    const slaCol=g.sla==='over'?'#F23D4F':g.sla==='warn'?'#F5A623':'#00A650';
+    const slaTxt=g.sla==='over'?`🔴 Vencido ${fmtHoras(g.mins_restantes!=null?Math.abs(g.mins_restantes):null)}`
+                :g.sla==='warn'?`⚠️ ${fmtHoras(g.mins_restantes)} restantes`
+                :g.mins_restantes!=null?`🟢 ${fmtHoras(g.mins_restantes)} restantes`:'Sin SLA';
+    const wmsUrl=g.is_id?`https://wms.adminml.com/reports/totes?inbound_id=${g.is_id}&resource=PUT_AWAY`:'';
+    return `<div style="border:1px solid ${urgBorder};border-radius:6px;padding:8px 10px;margin-bottom:5px;background:#FFFFFF;cursor:pointer" onclick="pwFilterMovable('${g.movable}');switchTab('chk')">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+        ${g.is_nt?`<span style="font-size:8px;padding:1px 5px;border-radius:4px;background:#EBF2FF;color:#3483FA;border:1px solid #2968C8;font-weight:700">NT</span>`:''}
+        ${g.pw_status==='WAITING_FINISH'?`<span style="font-size:8px;padding:1px 5px;border-radius:4px;background:#E6F7EE;color:#00A650;border:1px solid #238636">EN PROCESO</span>`:''}
+        <span style="font-family:monospace;font-size:10px;color:#FFFFFF;font-weight:700;flex:1">${g.movable}</span>
+        <span style="font-size:9px;color:${slaCol};font-weight:700">${slaTxt}</span>
+      </div>
+      <div style="display:flex;gap:12px;font-size:9px;color:#999999;flex-wrap:wrap">
+        <span>IS <b style="color:#F5A623">${g.is_id||'—'}</b></span>
+        <span>${g.shipment_type||'—'}</span>
+        <span><b style="color:#333333">${g.sku_count||0}</b> SKUs</span>
+        <span><b style="color:#333333">${g.qty_checkin||0}</b> u</span>
+        <span style="color:#666666">${g.seller||'—'}</span>
+        ${wmsUrl?`<a href="${wmsUrl}" target="_blank" onclick="event.stopPropagation()" style="color:#3483FA;text-decoration:none;margin-left:auto">WMS ↗</a>`:''}
+      </div>
+    </div>`;
+  }).join('');
+
+  if(total>60){
+    el.innerHTML+=`<div style="text-align:center;color:#999999;font-size:9px;padding:8px">Mostrando 60 de ${total} movables</div>`;
+  }
+}
+
+function buildPendingSKUs(){
+  // Construir lista de SKUs pendientes desde CHK_DATA, ordenados por SLA urgencia
+  const urgOrder={'over':0,'warn':1,'ok':2,'pw_active':3,'unknown':4};
+  const seen={};
+  const list=[];
+  CHK_DATA.filter(o=>o.sla!=='done').forEach(o=>{
+    if(!seen[o.sku]){
+      seen[o.sku]={sku:o.sku, sla:o.sla, mins_restantes:o.mins_restantes, qty:0, seller:o.seller||''};
+      list.push(seen[o.sku]);
+    }
+    seen[o.sku].qty+=(o.qty_chk||o.qty_dec||0);
+    // mantener el peor SLA del SKU
+    if((urgOrder[o.sla]??9)<(urgOrder[seen[o.sku].sla]??9)){
+      seen[o.sku].sla=o.sla;
+      seen[o.sku].mins_restantes=o.mins_restantes;
+    }
+  });
+  return list.sort((a,b)=>{
+    const ua=urgOrder[a.sla]??9, ub=urgOrder[b.sla]??9;
+    if(ua!==ub) return ua-ub;
+    return (a.mins_restantes??9999)-(b.mins_restantes??9999);
+  });
+}
+
+function renderSKUList(list){
+  const el=document.getElementById('sug-sku-items');
+  if(!list.length){el.innerHTML='<div style="padding:12px;color:#999999;font-size:10px">Sin resultados</div>';return;}
+
+  // Si la lista viene con campo sla, es lista de pendientes — usar vista SLA
+  if(list[0] && list[0].sla!==undefined && list[0].locs===undefined){
+    el.innerHTML=list.slice(0,200).map(o=>{
+      const slaCol=o.sla==='over'?'#F23D4F':o.sla==='warn'?'#F5A623':o.sla==='pw_active'?'#3483FA':'#00A650';
+      const slaIcon=o.sla==='over'?'🔴':o.sla==='warn'?'⚠️':o.sla==='pw_active'?'📦':'🟢';
+      const mins=o.mins_restantes;
+      const slaTxt=o.sla==='over'?fmtHoras(mins!=null?Math.abs(mins):null)+' venc'
+                  :o.sla==='warn'?fmtHoras(mins)+' rest'
+                  :o.sla==='pw_active'?'proceso':'ok';
+      return `<div class="sug-sku-item${SUG_SEL===o.sku?' sel':''}" onclick="selSKU('${o.sku}')">
+        <span class="sug-sku-inv" style="color:${slaCol}">${slaIcon} ${o.sku}</span>
+        <span class="sug-sku-name" style="color:${slaCol};font-size:8px">${slaTxt}</span>
+        <span class="sug-sku-locs" style="color:#F5A623">${o.qty}</span>
+      </div>`;
+    }).join('');
+    return;
+  }
+
+  // Vista normal (búsqueda por texto)
+  el.innerHTML=list.slice(0,200).map(o=>`
+    <div class="sug-sku-item${SUG_SEL===o.sku?' sel':''}" onclick="selSKU('${o.sku}')">
+      <span class="sug-sku-inv">${o.sku}</span>
+      <span class="sug-sku-name">${o.title||'—'}</span>
+      <span class="sug-sku-locs">${o.locs}📦</span>
+    </div>`).join('');
+}
+
+function filtrarSKUList(q){
+  if(!SUG_READY) return;
+  q=q.toLowerCase().trim();
+  if(!q){
+    // Sin búsqueda: mostrar pendientes por SLA si hay, sino inventario
+    const pend=buildPendingSKUs();
+    if(pend.length) renderSKUList(pend);
+    else renderSKUList(SUG_SKUS);
+    return;
+  }
+  // Con búsqueda: filtrar inventario completo
+  const fil=SUG_SKUS.filter(o=>o.sku.toLowerCase().includes(q)||o.title.toLowerCase().includes(q)||o.brand.toLowerCase().includes(q)||o.domain.toLowerCase().includes(q));
+  renderSKUList(fil);
+}
+
+function selSKU(sku){
+  SUG_SEL=sku;
+  document.getElementById('sug-input').value=sku;
+  renderSKUList(SUG_SKUS.filter(o=>o.sku===sku||
+    (SUG_SKUS.find(x=>x.sku===sku)&&(o.domain===SUG_SKUS.find(x=>x.sku===sku).domain))
+  ).slice(0,50));
+  buscarSugerencia();
+}
+
+function buscarSugerencia(){
+  const q=(document.getElementById('sug-input').value||'').trim();
+  if(!q||!SUG_READY) return;
+  const res=document.getElementById('sug-results');
+
+  // Resolve query to a SKU entry
+  const entry=SUG_SKUS.find(o=>o.sku===q||o.title.toLowerCase()===q.toLowerCase())||
+               SUG_SKUS.find(o=>o.sku.toLowerCase().includes(q.toLowerCase())||o.title.toLowerCase().includes(q.toLowerCase()));
+  if(!entry){
+    res.innerHTML=`<div id="sug-empty">No se encontró el SKU o producto "<b>${q}</b>".<br>Verifica que esté en inventario.</div>`;
+    return;
+  }
+
+  const targetSKU   = entry.sku;
+  const targetDom   = entry.domain;
+  const targetBrand = entry.brand;
+
+  // Score cada slot con función unificada
+  const scored = SUG_SLOTS.map(sl=>{
+    const {score,tags,stars}=scoreSugerencia(sl,targetSKU,targetDom,targetBrand);
+    return {...sl,score,tags,stars};
+  }).sort((a,b)=>b.score-a.score);
+  const top=scored.slice(0,15);
+
+  res.innerHTML=`
+    <div style="font-size:11px;color:#666666;margin-bottom:4px">
+      Sugerencias para <b style="color:#F5A623;font-family:monospace">${targetSKU}</b>
+      ${entry.title?`<span style="color:#333333"> — ${entry.title}</span>`:''}
+      <span style="float:right;font-size:9px">${top.length} mejores de ${scored.length}</span>
+    </div>
+    ${top.map((sl,i)=>`
+    <div class="sug-result-card">
+      <div class="sug-result-hdr">
+        <span style="color:#999999;font-size:10px">${i+1}.</span>
+        <span class="sug-result-addr">${sl.id}</span>
+        <span class="sug-result-zona">${sl.area}</span>
+        <span class="sug-afinidad" title="Score: ${sl.score}">${sl.stars}</span>
+        <span class="sug-score-badge">${sl.score}pts</span>
+      </div>
+      <div class="sug-reasons">
+        ${sl.tags.map(t=>`<span class="sug-tag ${t.cls}">${t.txt}</span>`).join('')}
+      </div>
+      <div class="sug-bars">
+        <div class="sug-bar-wrap">
+          <div class="sug-bar-lbl"><span>Volumen ocupado</span><span style="color:${volColor(sl.pct_vol||0)}">${sl.pct_vol!==null?sl.pct_vol+'%':'—'}</span></div>
+          <div class="sug-bar"><div class="sug-bar-fill" style="width:${sl.pct_vol||0}%;background:${volColor(sl.pct_vol||0)}"></div></div>
+        </div>
+        <div class="sug-bar-wrap">
+          <div class="sug-bar-lbl"><span>SKUs almacenados</span><span>${sl.num_skus}${sl.limite_skus!==null?' / '+sl.limite_skus:''}</span></div>
+          <div class="sug-bar"><div class="sug-bar-fill" style="width:${sl.limite_skus?Math.round(sl.num_skus/sl.limite_skus*100):0}%;background:#3483FA"></div></div>
+        </div>
+        ${sl.skus.length?`<div style="font-size:9px;color:#999999">SKUs actuales: ${sl.skus.slice(0,3).map(s=>`<span style="font-family:monospace;color:#3483FA44">${s}</span>`).join(', ')}${sl.skus.length>3?` +${sl.skus.length-3} más`:''}</div>`:'<div style="font-size:9px;color:#999999">Ubicación vacía</div>'}
+      </div>
+    </div>`).join('')}
+  `;
+}
+
+// ── Check-in & Putaway ───────────────────────────────────────────────────
+let CHK_DATA=[], CHK_SEL=null;
+let CHK_FILTER={q:'', pend:true, over:true, done:true, nt:false};
+let CHK_SLA_WARN=2880; // minutos — se actualiza desde el JSON (default 48h)
+let CHK_SORT='asc'; // 'asc' = más vencidos primero, 'desc' = más tiempo restante primero
+let CHK_AUTO=null;
+let INB_DATA=[];   // IS-level NT inbound
+let PW_DATA=[];    // movables pendientes de putaway (BT_FBM_PUTAWAY)
+let PW_VIEW='movable'; // 'movable' | 'is'
+let PW_SLA_FILTER='all'; // 'all' | 'over' | 'warn' | 'ok' | 'nt'
+let PW_UPDATED='';
+let PW_ALL=[];      // todos los movables pendientes (activos + sin actualizar)
+let PW_STALE=[];    // posibles datos desactualizados (ver generar_putaway_json.py)
+let PW_STALE_DAYS=7;
+let PW_SORT='asc'; // 'asc' = más vencidos primero, 'desc' = más tiempo primero
+
+async function loadCheckin(){
+  try{
+    const [r1,r2,r3]=await Promise.all([
+      fetch('data/checkin_CLRM04.json?t='+Date.now()),
+      fetch('data/inbound_nt_CLRM04.json?t='+Date.now()),
+      fetch('data/putaway_CLRM04.json?t='+Date.now())
+    ]);
+    if(r1.ok){
+      const d=await r1.json();
+      CHK_DATA=d.items||[];
+      if(d.sla_warn_min) CHK_SLA_WARN=d.sla_warn_min;
+      const s=d.stats||{};
+      document.getElementById('ck-total').textContent=(s.total||0).toLocaleString();
+      document.getElementById('ck-pw').textContent=(s.en_putaway||0).toLocaleString();
+      document.getElementById('ck-pend').textContent=((s.pendientes||0)).toLocaleString();
+      document.getElementById('ck-over').textContent=(s.over_sla||0).toLocaleString();
+      document.getElementById('ck-done').textContent=(s.done||0).toLocaleString();
+      document.getElementById('ck-upd').textContent=d.updated||'—';
+      const ntCount=CHK_DATA.filter(o=>o.is_nt).length;
+      document.getElementById('ck-nt').textContent=ntCount.toLocaleString();
+      const ntBtn=document.getElementById('ck-nt-btn'); if(ntBtn) ntBtn.textContent=ntCount;
+    }
+    if(r2.ok){ const d=await r2.json(); INB_DATA=d.shipments||[]; }
+    if(r3.ok){
+      const d=await r3.json();
+      // Los movables marcados "stale" (sin actualizar hace >N dias y sin stock) quedan fuera de los
+      // contadores y del SLA; siguen disponibles en el filtro "Sin actualizar" para poder auditarlos.
+      PW_ALL=d.movables||[];
+      PW_STALE=PW_ALL.filter(g=>g.stale);
+      PW_DATA=PW_ALL.filter(g=>!g.stale);
+      PW_STALE_DAYS=d.stale_days||7;
+      PW_UPDATED=d.updated||'';
+      // Propagar is_nt a CHK_DATA por IS: si un movable NT pertenece al mismo IS, marcar items como NT
+      const ntIsSet=new Set(PW_DATA.filter(g=>g.is_nt).map(g=>String(g.is_id||'')).filter(Boolean));
+      CHK_DATA.forEach(o=>{
+        if(!o.is_nt && ntIsSet.has(String(o.inbound_id||o.is_id||''))) o.is_nt=true;
+      });
+    }
+    chkRender();
+    renderPutawaySLA();
+    if(SUG_READY) renderColaPendiente();
+  }catch(e){}
+}
+
+// filtro activo de movable
+let PW_MOVABLE_FILTER=null;
+
+// ── Helpers de SLA globales (usados en renderPutawaySLA y pwShowMovablePopup) ─
+function pwCreatedMs(g){
+  if(!g.pw_created) return null;
+  // pw_created es PW_CREATED_DATETIME de BQ: hora local Santiago (UTC-4 invierno)
+  return new Date(g.pw_created.replace(' ','T') + '-04:00').getTime();
+}
+function liveEnProceso(g){
+  const t = pwCreatedMs(g);
+  if(t) return Math.round((Date.now() - t) / 60000);
+  return g.mins_en_proceso ?? g.mins_since_chk;
+}
+function liveMins(g){
+  if(g.expire_at_date){
+    return Math.round((new Date(g.expire_at_date).getTime() - Date.now()) / 60000);
+  }
+  const t = pwCreatedMs(g);
+  if(!t) return g.mins_restantes;
+  return Math.round((t + 48*60*60*1000 - Date.now()) / 60000);
+}
+function slaBadge(mins){
+  if(mins==null) return `<span style="font-size:9px;color:#999999">—</span>`;
+  const abs=Math.abs(mins);
+  const h=Math.floor(abs/60), m=abs%60;
+  const txt=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}hr`;
+  if(mins<0) return `<span style="display:inline-block;padding:2px 7px;border-radius:12px;background:#F23D4F;color:#fff;font-size:9px;font-weight:700">${txt}</span>`;
+  const bg=mins<360?'#FF7A00':mins<720?'#F5A623':'#00A650';
+  return `<span style="display:inline-block;padding:2px 7px;border-radius:12px;background:${bg};color:#fff;font-size:9px;font-weight:700">${txt}</span>`;
+}
+
+function renderPutawaySLA(){
+  const hdr=document.getElementById('chk-det-hdr');
+  const body=document.getElementById('chk-det-body');
+  if(CHK_SEL) return;
+
+  // Usar PW_DATA (BT_FBM_PUTAWAY, solo activos) como fuente; el filtro "stale" muestra los sin actualizar
+  const src = PW_SLA_FILTER==='stale' ? PW_STALE : (PW_DATA.length ? PW_DATA : []);
+
+  // Recalcular SLA en vivo usando pw_created + 48h
+  function liveSla(g){
+    const m = liveMins(g);
+    if(m==null) return 'unknown';
+    return m<0?'over':m<120?'warn':'ok';
+  }
+
+  // Totales globales en vivo
+  const over   = src.filter(g=>liveSla(g)==='over').length;
+  const warn   = src.filter(g=>liveSla(g)==='warn').length;
+  const active = src.filter(g=>g.pw_status==='WAITING_FINISH').length;
+  const ntCount= src.filter(g=>g.is_nt).length;
+
+  // Rangos de SLA para botones horarios
+  const slaBands=[
+    {key:'over',  label:'🔴 Vencido',  col:'#F23D4F', fn:g=>liveMins(g)<0},
+    {key:'h2',    label:'⚡ <2h',       col:'#d07030', fn:g=>{const m=liveMins(g);return m>=0&&m<120;}},
+    {key:'h8',    label:'🟠 2–8h',      col:'#F5A623', fn:g=>{const m=liveMins(g);return m>=120&&m<480;}},
+    {key:'h24',   label:'🟡 8–24h',     col:'#c8a000', fn:g=>{const m=liveMins(g);return m>=480&&m<1440;}},
+    {key:'h24p',  label:'🟢 +24h',      col:'#00A650', fn:g=>{const m=liveMins(g);return m>=1440;}},
+    {key:'nt',    label:'📦 NT',        col:'#3483FA', fn:g=>g.is_nt},
+  ];
+
+  // Búsqueda por texto
+  const pwQ=(document.getElementById('pw-search')?.value||'').toLowerCase().trim();
+
+  // Aplicar filtro SLA + búsqueda
+  let filtered = PW_SLA_FILTER==='all' ? src
+    : (slaBands.find(b=>b.key===PW_SLA_FILTER)?.fn ? src.filter(slaBands.find(b=>b.key===PW_SLA_FILTER).fn) : src);
+  if(pwQ) filtered=filtered.filter(g=>(g.movable||'').toLowerCase().includes(pwQ)||(g.is_id||'').includes(pwQ)||(g.seller||'').toLowerCase().includes(pwQ));
+
+  const groups = [...filtered].sort((a,b)=>{
+    const na=a.is_nt?0:1, nb=b.is_nt?0:1;
+    if(na!==nb) return na-nb;
+    const ra=liveMins(a)??999999, rb=liveMins(b)??999999;
+    if(ra!==rb) return PW_SORT==='asc' ? ra-rb : rb-ra;
+    return (b.mins_since_chk||0)-(a.mins_since_chk||0);
+  });
+
+  const totalSkus=filtered.reduce((s,g)=>s+(g.sku_count||0),0);
+
+  function slaBtn(val, label, col){
+    const active=PW_SLA_FILTER===val;
+    return `<button onclick="pwSetSLA('${val}')" style="font-size:8px;padding:2px 6px;border-radius:10px;border:1px solid ${active?col:'#D9D9D9'};background:${active?col+'22':'transparent'};color:${active?col:'#666666'};cursor:pointer;white-space:nowrap">${label}</button>`;
+  }
+
+  function slaBtn(val, label, col){
+    const on=PW_SLA_FILTER===val;
+    return `<button onclick="pwSetSLA('${val}')" style="font-size:9px;padding:3px 8px;border-radius:10px;border:1px solid ${on?col:'#D9D9D9'};background:${on?col+'22':'transparent'};color:${on?col:'#666666'};cursor:pointer;white-space:nowrap;font-weight:${on?'700':'400'}">${label}</button>`;
+  }
+
+  // Contar por banda
+  const bandCounts={};
+  slaBands.forEach(b=>{ bandCounts[b.key]=PW_DATA.filter(b.fn).length; });
+
+  hdr.innerHTML=`
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:4px">
+    <span style="color:#F5A623;font-weight:700;font-size:11px">📦 Putaway por Guardar</span>
+    <span style="font-size:8px;color:#999999">${src.length} movables · ${src.reduce((s,g)=>s+(g.sku_count||0),0)} SKUs</span>
+  </div>
+  ${PW_UPDATED?`<div style="font-size:8px;color:#999999;margin-top:1px">Actualizado: <b>${PW_UPDATED}</b></div>`:''}
+
+  <input id="pw-search" type="text" placeholder="Buscar movable, IS, seller…" autocomplete="off"
+    oninput="renderPutawaySLA()"
+    style="width:100%;margin-top:6px;background:#F5F5F5;border:1px solid #D9D9D9;border-radius:4px;
+           font-size:10px;font-family:monospace;padding:4px 8px;outline:none;color:#333333"/>
+
+  <div style="margin-top:6px">
+    <div style="font-size:9px;color:#999999;font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Filtrar por SLA</div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap">
+      ${slaBtn('all',`Todos (${PW_DATA.length})`,'#666666')}
+      ${slaBands.map(b=>slaBtn(b.key,`${b.label} (${bandCounts[b.key]})`,b.col)).join('')}
+      ${PW_STALE.length?slaBtn('stale',`🕓 Sin actualizar (${PW_STALE.length})`,'#888888'):''}
+    </div>
+    ${PW_SLA_FILTER==='stale'?`<div style="font-size:9px;color:#8a6d00;background:#FFF8E1;border:1px solid #F5E1A4;border-radius:4px;padding:4px 6px;margin-top:5px">Posibles datos desactualizados: putaway pendiente sin actualizar hace más de ${PW_STALE_DAYS} días y sin stock en la ubicación. No cuentan como vencidos. Conviene validarlos en WMS y pedir su cierre al equipo dueño de la tabla.</div>`:''}
+  </div>
+
+  <div style="font-size:8px;color:#999999;margin-top:5px">
+    ${groups.length} mostrando · ${totalSkus} SKUs · ${active} en proceso
+    ${PW_MOVABLE_FILTER?` · <button onclick="pwClearFilter()" style="font-size:8px;padding:1px 5px;border-radius:6px;background:#D9D9D9;color:#333333;border:none;cursor:pointer">✕ Limpiar</button>`:''}
+  </div>
+  <div style="display:flex;gap:4px;margin-top:5px">
+    <button onclick="pwSetView('movable')" style="flex:1;font-size:9px;padding:3px 0;border-radius:6px;border:1px solid ${PW_VIEW==='movable'?'#3483FA':'#D9D9D9'};background:${PW_VIEW==='movable'?'#EBF2FF':'transparent'};color:${PW_VIEW==='movable'?'#3483FA':'#666666'};cursor:pointer">Por Movable</button>
+    <button onclick="pwSetView('is')" style="flex:1;font-size:9px;padding:3px 0;border-radius:6px;border:1px solid ${PW_VIEW==='is'?'#3483FA':'#D9D9D9'};background:${PW_VIEW==='is'?'#EBF2FF':'transparent'};color:${PW_VIEW==='is'?'#3483FA':'#666666'};cursor:pointer">Por IS</button>
+    <button onclick="pwToggleSort()" style="font-size:9px;padding:3px 8px;border-radius:6px;border:1px solid #D9D9D9;background:transparent;color:#666666;cursor:pointer">${PW_SORT==='asc'?'↑ Urgente':'↓ Holgado'}</button>
+  </div>`;
+
+  if(PW_VIEW==='is'){ renderInboundIS(); return; }
+
+  // Agrupar por hora de appointment (igual que WMS)
+  function apptSlot(g){
+    const mins = liveMins(g);
+    if(!g.appointment || mins==null || mins<0)
+      return {key:'__retrasado', label:'Retrasado', hora:null};
+    // appointment: "2026-07-13 10:00"
+    const hora=g.appointment.slice(11,16); // "10:00"
+    return {key: hora, label: hora+'hr', hora};
+  }
+
+  function slaBadge(mins){
+    if(mins==null) return `<span style="font-size:9px;color:#999999">—</span>`;
+    const abs=Math.abs(mins);
+    const h=Math.floor(abs/60), m=abs%60;
+    const txt=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}hr`;
+    if(mins<0) return `<span style="display:inline-block;padding:2px 7px;border-radius:12px;background:#F23D4F;color:#fff;font-size:9px;font-weight:700">${txt}</span>`;
+    const bg=mins<360?'#FF7A00':mins<720?'#F5A623':'#00A650';
+    return `<span style="display:inline-block;padding:2px 7px;border-radius:12px;background:${bg};color:#fff;font-size:9px;font-weight:700">${txt}</span>`;
+  }
+
+  const visGroups=PW_MOVABLE_FILTER
+    ?groups.filter(g=>g.movable===PW_MOVABLE_FILTER)
+    :groups;
+
+  if(!visGroups.length){
+    body.innerHTML=`<div style="color:#00A650;font-size:11px;padding:20px;text-align:center">✓ Sin items pendientes</div>`;
+    return;
+  }
+
+  // Agrupar y ordenar slots: retrasado primero, luego por hora
+  const slotMap={};
+  visGroups.forEach(g=>{
+    const s=apptSlot(g);
+    if(!slotMap[s.key]) slotMap[s.key]={...s, items:[]};
+    slotMap[s.key].items.push(g);
+  });
+  const slotKeys=Object.keys(slotMap).sort((a,b)=>{
+    if(a==='__retrasado') return -1;
+    if(b==='__retrasado') return 1;
+    return a.localeCompare(b);
+  });
+
+  // Tabla estilo WMS
+  let html=`<table style="width:100%;border-collapse:collapse;font-size:11px">
+    <thead><tr style="background:#F5F5F5;border-bottom:2px solid #D9D9D9;text-align:left">
+      <th style="padding:6px 10px;color:#666666;font-weight:600;white-space:nowrap">Movable</th>
+      <th style="padding:6px 8px;color:#666666;font-weight:600">SLA ↑</th>
+      <th style="padding:6px 8px;color:#666666;font-weight:600;white-space:nowrap">En proceso</th>
+      <th style="padding:6px 8px;color:#666666;font-weight:600">IS</th>
+      <th style="padding:6px 8px;color:#666666;font-weight:600">Tipo</th>
+      <th style="padding:6px 8px;color:#666666;font-weight:600">Seller</th>
+      <th style="padding:6px 8px;color:#666666;font-weight:600">Unid.</th>
+    </tr></thead>
+    <tbody>`;
+
+  slotKeys.forEach(key=>{
+    const slot=slotMap[key];
+    const slotUnits=slot.items.reduce((s,g)=>s+(g.qty_checkin||0),0);
+    const slotNT=slot.items.filter(g=>g.is_nt).length;
+    const slotWorking=slot.items.filter(g=>g.pw_status==='WAITING_FINISH').length;
+    const isRetrasado=key==='__retrasado';
+    const slotColor=isRetrasado?'#F23D4F':'#3483FA';
+    const sampleMins=liveMins(slot.items[0]??{});
+    const tiempoRest=isRetrasado
+      ?`<span style="color:#F23D4F;font-weight:700">${sampleMins!=null?fmtHoras(Math.abs(sampleMins))+' retraso':'Retrasado'}</span>`
+      :(sampleMins!=null?slaBadge(sampleMins):'');
+
+    html+=`<tr style="background:#EBF2FF;border-top:2px solid #D9D9D9;border-bottom:1px solid #D9D9D9">
+      <td colspan="7" style="padding:6px 10px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <span style="font-weight:700;color:${slotColor};font-size:12px">${isRetrasado?'⚠ Retrasado':slot.label} <span style="font-weight:400;font-size:10px;color:#666666">(${slot.items.length} movables)</span></span>
+          <span style="font-size:10px;color:#666666">${tiempoRest}</span>
+          <span style="font-size:10px;color:#999999;margin-left:auto">${slotUnits.toLocaleString()} un.${slotNT?` · <b style="color:#3483FA">${slotNT} NT</b>`:''}${slotWorking?` · <b style="color:#00A650">${slotWorking} trabajando</b>`:' · <span style="color:#999">Em espera</span>'}</span>
+        </div>
+      </td>
+    </tr>`;
+
+    slot.items.forEach(g=>{
+      const isActive=PW_MOVABLE_FILTER===g.movable;
+      const tipo=g.shipment_type==='ftl'?'FTL':g.shipment_type==='pickup'?'Colecta':g.shipment_type==='supplier'?'Proveedor':(g.shipment_type||'—');
+      const created=g.pw_created?g.pw_created.slice(5,10):'';
+      html+=`<tr onclick="pwShowMovablePopup('${g.movable}')" style="border-bottom:1px solid #F0F0F0;cursor:pointer;background:${isActive?'#EBF2FF':'#FFFFFF'}"
+        onmouseover="this.style.background='#F5F5F5'" onmouseout="this.style.background='${isActive?'#EBF2FF':'#FFFFFF'}'">
+        <td style="padding:7px 10px;white-space:nowrap">
+          <div style="font-family:monospace;font-size:10px;font-weight:700;color:#3483FA">${g.movable}</div>
+          <div style="font-size:9px;color:#999999;display:flex;gap:4px;align-items:center;margin-top:1px">
+            ${created}
+            ${g.is_nt?`<span style="padding:0 4px;border-radius:4px;background:#EBF2FF;color:#3483FA;font-size:8px;border:1px solid #3483FA;font-weight:700">NT</span>`:''}
+            ${g.pw_status==='WAITING_FINISH'?`<span style="padding:0 4px;border-radius:4px;background:#E6F7EE;color:#00A650;font-size:8px;border:1px solid #00A650">trabajando</span>`:''}
+          </div>
+        </td>
+        <td style="padding:7px 8px;white-space:nowrap">${slaBadge(liveMins(g))}</td>
+        <td style="padding:7px 8px;color:#666666;white-space:nowrap">${fmtHoras(liveEnProceso(g))}</td>
+        <td style="padding:7px 8px;font-family:monospace;font-weight:700;color:#F5A623;font-size:10px">${g.is_id||'—'}</td>
+        <td style="padding:7px 8px;color:#999999;font-size:10px">${tipo}</td>
+        <td style="padding:7px 8px;color:#666666;font-size:10px;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${g.seller||'—'}</td>
+        <td style="padding:7px 8px;font-weight:700;color:#333333;text-align:right">${(g.qty_checkin||0).toLocaleString()}</td>
+      </tr>`;
+    });
+  });
+
+  html+='</tbody></table>';
+  body.innerHTML=html;
+}
+
+function pwFilterMovable(mv){
+  if(PW_MOVABLE_FILTER===mv){
+    pwClearFilter();
+    return;
+  }
+  PW_MOVABLE_FILTER=mv;
+
+  // Obtener is_id desde PW_DATA (fuente confiable)
+  const pwRec=PW_ALL.find(g=>g.movable===mv)||{};
+  const isId=pwRec.is_id||'';
+  const isNT=mv.includes('-NT-');
+
+  CHK_FILTER._movable=mv;
+  CHK_FILTER._is_id=isId;
+
+  const hdr=document.getElementById('chk-det-hdr');
+  hdr.innerHTML=`
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+      ${isNT?`<span style="padding:1px 5px;border-radius:6px;background:#EBF2FF;color:#3483FA;font-size:9px;border:1px solid #2968C8;font-weight:700">NT</span>`:''}
+      <span style="font-family:monospace;font-size:11px;color:#FFFFFF;font-weight:700">${mv}</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
+      <span style="font-size:9px;color:#999999">IS</span>
+      <span style="font-family:monospace;font-size:12px;color:#F5A623;font-weight:700">${isId||'—'}</span>
+      <button onclick="pwClearFilter()" style="margin-left:auto;font-size:8px;padding:2px 7px;border-radius:8px;background:#D9D9D9;color:#333333;border:none;cursor:pointer">✕ Volver</button>
+    </div>`;
+  chkRenderMovable();
+  renderPutawaySLA();
+}
+
+function pwClearFilter(){
+  PW_MOVABLE_FILTER=null;
+  CHK_FILTER._movable=null;
+  chkRender();
+  renderPutawaySLA();
+}
+
+// ── Popup de movable en tab Putaway ──────────────────────────────────────────
+function pwShowMovablePopup(mv){
+  const pw  = PW_ALL.find(g=>g.movable===mv)||{};
+  const isId= pw.is_id||'';
+  const isNT= mv.includes('-NT-');
+
+  // Buscar SKUs en CHK_DATA por movable, luego por IS
+  let list = CHK_DATA.filter(o=>o.sla!=='done' && (o.movable||'')===mv);
+  if(!list.length && isId)
+    list = CHK_DATA.filter(o=>o.sla!=='done' && String(o.is_id||o.inbound_id||'')===String(isId));
+
+  const movSkus = list.map(o=>o.sku);
+
+  // SLA live
+  const lm = liveMins(pw);
+  const slaCol = lm!==null && lm<0 ? '#F23D4F' : lm!==null && lm<120 ? '#F5A623' : '#00A650';
+  const slaTxt = lm===null ? '—'
+    : lm<0 ? `🔴 Vencido ${fmtHoras(Math.abs(lm))}`
+    : lm<120 ? `⚠️ ${fmtHoras(lm)} restantes`
+    : `🟢 ${fmtHoras(lm)} restantes`;
+
+  const wmsUrl = isId ? `https://wms.adminml.com/reports/totes?inbound_id=${isId}&resource=PUT_AWAY` : '';
+  const tipo = pw.shipment_type==='ftl'?'FTL':pw.shipment_type==='pickup'?'Colecta':pw.shipment_type==='supplier'?'Proveedor':(pw.shipment_type||'—');
+
+  const panelProductos  = _productosMovable(list, pw);
+  const panelSugerencias= _sugerenciasGuardado(isNT, movSkus);
+
+  // Resumen dimensiones máximas del movable
+  const dims = _maxProductDims(movSkus);
+  const dimsHtml = dims
+    ? `<div style="font-size:8px;color:#555;background:#F8F8F8;border-radius:4px;padding:3px 7px;margin-bottom:6px;display:inline-block">
+        📐 Máx: ${dims.h>0?dims.h+'cm H ':''}${dims.l>0?dims.l+'cm L ':''}${dims.w>0?dims.w+'cm W ':''}${dims.kg>0?'· '+dims.kg+'kg':''}
+       </div>`
+    : '';
+
+  const content = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div>
+        <div style="display:flex;align-items:center;gap:6px">
+          ${isNT?`<span style="padding:1px 6px;border-radius:6px;background:#EBF2FF;color:#3483FA;font-size:9px;border:1px solid #2968C8;font-weight:700">NT</span>`:''}
+          <span style="font-family:monospace;font-size:13px;font-weight:700;color:#333333">${mv}</span>
+        </div>
+        <div style="font-size:10px;color:#999999;margin-top:3px">IS <b style="color:#F5A623">${isId||'—'}</b></div>
+      </div>
+      <button onclick="pwClosePopup()" style="font-size:11px;padding:3px 10px;border-radius:8px;background:#F0F0F0;border:none;cursor:pointer;color:#666">✕</button>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:10px;background:#F8F8F8;border-radius:6px;padding:8px 10px;margin-bottom:14px">
+      <div><span style="color:#999">Tipo</span><br><b style="color:#333">${tipo}</b></div>
+      <div><span style="color:#999">Seller</span><br><b style="color:#333;font-size:9px">${pw.seller||'—'}</b></div>
+      <div><span style="color:#999">Creado</span><br><b style="color:#666">${pw.pw_created||'—'}</b></div>
+      <div><span style="color:#999">SLA</span><br><b style="color:${slaCol}">${slaTxt}</b></div>
+    </div>
+
+    <div style="font-size:10px;font-weight:700;color:#333;margin-bottom:6px;padding-bottom:5px;border-bottom:2px solid #E8E8E8">
+      📦 Productos del movable
+    </div>
+    <div style="margin-bottom:16px;max-height:260px;overflow-y:auto">${panelProductos}</div>
+
+    <div style="font-size:10px;font-weight:700;color:#333;margin-bottom:6px;padding-bottom:5px;border-bottom:2px solid #E8E8E8">
+      📍 Sugerencias de guardado
+    </div>
+    ${dimsHtml}
+    <div style="margin-bottom:14px">${panelSugerencias}</div>
+
+    ${wmsUrl?`<a href="${wmsUrl}" target="_blank" style="display:block;text-align:center;font-size:10px;padding:7px;border-radius:6px;background:#EBF2FF;color:#3483FA;text-decoration:none;border:1px solid #2968C8;font-weight:600">🔗 Ver IS ${isId} en WMS</a>`:''}
+  `;
+
+  document.getElementById('pw-popup-body').innerHTML = content;
+  const panel = document.getElementById('pw-popup-panel');
+  panel.style.transform = 'translateX(0)';
+  panel.style.opacity   = '1';
+  document.getElementById('pw-popup-overlay').style.display = 'block';
+}
+
+function pwClosePopup(){
+  const panel = document.getElementById('pw-popup-panel');
+  panel.style.transform = 'translateX(100%)';
+  panel.style.opacity   = '0';
+  document.getElementById('pw-popup-overlay').style.display = 'none';
+}
+
+function pwSetView(v){
+  PW_VIEW=v;
+  renderPutawaySLA();
+}
+
+function pwSetSLA(v){
+  PW_SLA_FILTER=v;
+  renderPutawaySLA();
+}
+
+function pwToggleSort(){
+  PW_SORT = PW_SORT==='asc' ? 'desc' : 'asc';
+  renderPutawaySLA();
+}
+
+function renderInboundIS(){
+  const body=document.getElementById('chk-det-body');
+
+  // IS con items pendientes de putaway en CHK_DATA (agrupados por IS)
+  const pendItems=CHK_DATA.filter(o=>o.sla!=='done'&&!o.movable);
+  const byIS={};
+  pendItems.forEach(o=>{
+    const id=o.is_id||o.inbound_id||'';
+    if(!id) return;
+    if(!byIS[id]) byIS[id]={is_id:id, skus:0, qty_chk:0, mins_restantes:o.mins_restantes, sla:o.sla};
+    byIS[id].skus++;
+    byIS[id].qty_chk+=o.qty_chk||0;
+    const slaPrio={over:0,warn:1,pw_active:2,ok:3,unknown:4};
+    if((slaPrio[o.sla]??5)<(slaPrio[byIS[id].sla]??5)) byIS[id].sla=o.sla;
+    if(o.mins_restantes!=null&&(byIS[id].mins_restantes===null||o.mins_restantes<byIS[id].mins_restantes))
+      byIS[id].mins_restantes=o.mins_restantes;
+  });
+
+  // Enriquecer con datos NT de INB_DATA
+  const inbIdx={};
+  INB_DATA.forEach(x=>{inbIdx[x.is_id]=x;});
+  const list=Object.values(byIS).map(g=>{
+    const inb=inbIdx[g.is_id]||{};
+    return {...g, ntb_units:inb.ntb_units||0, tb_units:inb.tb_units||0,
+      ntb_skus:inb.ntb_skus||0, appointment:inb.appointment||null,
+      arrival:inb.arrival||null, shipment_type:inb.shipment_type||''};
+  });
+
+  // NT primero, luego por SLA
+  const slaPrio={over:0,warn:1,pw_active:2,ok:3,unknown:4};
+  list.sort((a,b)=>{
+    const na=a.ntb_units>0?0:1, nb=b.ntb_units>0?0:1;
+    if(na!==nb) return na-nb;
+    const sa=slaPrio[a.sla]??5, sb=slaPrio[b.sla]??5;
+    if(sa!==sb) return sa-sb;
+    return (a.mins_restantes??999999)-(b.mins_restantes??999999);
+  });
+
+  if(!list.length){
+    body.innerHTML=`<div style="color:#999999;font-size:10px;padding:20px;text-align:center">Sin IS pendientes de putaway</div>`;
+    return;
+  }
+
+  function fmtTipo(t){return t==='ftl'?'FTL':t==='pickup'?'Colecta':t==='supplier'?'Proveedor':(t||'—');}
+  function expiryLabel(mins){
+    if(mins==null) return {key:'z',label:'Sin fecha',col:'#999999',ico:'—'};
+    if(mins<0) return {key:'a_ret',label:'Retrasado',col:'#F23D4F',ico:'🔴'};
+    const exp=new Date(Date.now()+mins*60000);
+    const h=String(exp.getHours()).padStart(2,'0');
+    const isToday=exp.toDateString()===new Date().toDateString();
+    return {key:`b_${exp.toDateString()}_${h}`,label:`${isToday?'Hoy':'Mañana'} ${h}:00`,col:mins<1440?'#F5A623':'#00A650',ico:mins<1440?'⚠️':'🟢'};
+  }
+
+  // Actualizar header con totales
+  const totalNTB=list.reduce((s,x)=>s+x.ntb_units,0);
+  const totalTB=list.reduce((s,x)=>s+x.tb_units,0);
+  const hdr=document.getElementById('chk-det-hdr');
+  hdr.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px">
+    <span style="color:#F5A623;font-weight:700">📦 Putaway Pendiente por IS</span>
+    <span style="font-size:8px;color:#999999">${list.length} IS · ${pendItems.length} SKUs</span>
+  </div>
+  <div style="display:flex;gap:6px;margin-top:6px;font-size:9px;flex-wrap:wrap">
+    <span style="color:#3483FA">NT ${totalNTB} u</span>
+    <span style="color:#999999">TB ${totalTB} u</span>
+  </div>
+  <div style="display:flex;gap:4px;margin-top:8px">
+    <button onclick="pwSetView('movable')" style="flex:1;font-size:9px;padding:3px 0;border-radius:6px;border:1px solid #D9D9D9;background:transparent;color:#666666;cursor:pointer">Por Movable</button>
+    <button onclick="pwSetView('is')" style="flex:1;font-size:9px;padding:3px 0;border-radius:6px;border:1px solid #3483FA;background:#EBF2FF;color:#3483FA;cursor:pointer">Por IS</button>
+  </div>`;
+
+  let html='', lastKey='';
+  list.forEach(is=>{
+    const bk=expiryLabel(is.mins_restantes);
+    if(bk.key!==lastKey){
+      lastKey=bk.key;
+      const grp=list.filter(x=>expiryLabel(x.mins_restantes).key===bk.key);
+      const gNTB=grp.reduce((s,x)=>s+x.ntb_units,0);
+      html+=`<div style="padding:5px 10px;background:#FFFFFF;border-bottom:1px solid #D9D9D9;position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:6px">
+        <span style="font-size:10px;font-weight:700;color:${bk.col}">${bk.ico} ${bk.label}</span>
+        <span style="font-size:8px;color:#999999;margin-left:auto">${grp.length} IS${gNTB?` · <span style="color:#3483FA">${gNTB} u NT</span>`:''}</span>
+      </div>`;
+    }
+    const isNT=is.ntb_units>0;
+    const appt=is.appointment?is.appointment.slice(5,16):'—';
+    const arr=is.arrival?is.arrival.slice(5,16):'—';
+    const tipo=fmtTipo(is.shipment_type);
+    html+=`<div style="padding:8px 10px;border-bottom:1px solid #F5F5F5;border-left:3px solid ${isNT?'#3483FA':'#D9D9D9'}">
+      <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px">
+        ${isNT?`<span style="padding:1px 5px;border-radius:6px;background:#EBF2FF;color:#3483FA;font-size:8px;border:1px solid #2968C8;font-weight:700">NT</span>`:''}
+        <span style="font-size:9px;color:#999999">IS</span>
+        <span style="font-family:monospace;font-size:11px;color:#F5A623;font-weight:700">${is.is_id}</span>
+        ${tipo?`<span style="margin-left:auto;font-size:8px;color:#999999;background:#F5F5F5;padding:1px 5px;border-radius:4px">${tipo}</span>`:''}
+      </div>
+      <div style="display:flex;gap:8px;font-size:9px;margin-bottom:3px;flex-wrap:wrap">
+        ${isNT?`<span style="color:#3483FA;font-weight:700">${is.ntb_units} u NT</span>`:''}
+        ${is.tb_units?`<span style="color:#666666">${is.tb_units} u TB</span>`:''}
+        <span style="color:#999999">${is.skus} SKUs pend.</span>
+        <span style="color:#999999;margin-left:auto">${is.qty_chk} u checkin</span>
+      </div>
+      ${(appt!=='—'||arr!=='—')?`<div style="display:flex;gap:10px;font-size:8px;color:#999999">
+        ${appt!=='—'?`<span>📅 <span style="color:#666666">${appt}</span></span>`:''}
+        ${arr!=='—'?`<span>🛬 <span style="color:#666666">${arr}</span></span>`:''}
+      </div>`:''}
+    </div>`;
+  });
+  body.innerHTML=html;
+}
+
+// Dominios con afinidad BL (productos voluminosos / pesados / no caben en rack RK)
+const BL_AFFINITY_DOMAINS = new Set([
+  'MLC-TELEVISIONS',
+  'MLC-LAUNDRY_DETERGENTS',
+  'MLC-LATEX_ENAMEL_AND_ACRYLIC_PAINTS',
+  'MLC-DISPOSABLE_BABY_DIAPERS',
+  'MLC-ADULT_DIAPERS',
+  'MLC-KITCHEN_PAPER_TOWELS',
+  'MLC-TOILET_PAPERS',
+  'MLC-MINERAL_WATERS',
+  'MLC-FOOTWEAR_CLEANERS_AND_POLISHES',
+  'MLC-COOKING_OILS',
+  'MLC-WET_BABY_WIPES',
+  'MLC-PRINTERS',
+  'MLC-VEHICLE_COOLANTS_AND_ANTIFREEZE',
+  'MLC-DISHWASHING_DETERGENTS',
+  'MLC-VEHICLE_ADDITIVES',
+  'MLC-PAINT_BRUSHES',
+  'MLC-MULTIPURPOSE_CLEANERS_AND_DISINFECTANTS',
+  'MLC-FABRIC_SOFTENERS',
+  'MLC-ENGINE_OILS',
+  'MLC-FLOOR_DEODORIZERS',
+  'MLC-COOKIES',
+  'MLC-THERMAL_ADHESIVE_TAPES',
+  'MLC-PLANTING_KITS',
+  'MLC-BEERS',
+]);
+
+// Dominios con afinidad RK-BAJO: nivel 1-2, primeros pasillos de cada zona
+// (productos pesados/voluminosos que sí caben en rack pero deben ir abajo)
+const RK_LOW_DOMAINS = new Set([
+  'MLC-CAT_AND_DOG_FOODS',
+  'MLC-CAT_LITTER',
+  'MLC-DOG_FOOD',
+  'MLC-CAT_FOOD',
+  'MLC-PET_FOOD',
+]);
+
+// Dimensiones (cm/kg) por clase de ubicación en CLRM04
+// RK-027/028/029 no están en BT_FBM_ADDRESS_DIMENSIONS → estimadas por proximidad con RK-025-V2
+const SLOT_DIMS = {
+  'BL':      {h:100, w:120, d:100, kg:1000},
+  'BL_01':   {h:160, w:100, d:120, kg:1000},
+  'RK_001':  {h:156, w:100, d:120, kg:1000},
+  'RK_ALTO': {h:154, w:100, d:120, kg:1000},
+  'RK_BAJO': {h:158, w:100, d:120, kg:1000},
+  'RK-025-V2':{h:135,w:100, d:120, kg:1000},
+  'RK-026-V2':{h:131,w:100, d:120, kg:1000},
+  'RK-027':  {h:135, w:100, d:120, kg:1000},
+  'RK-028':  {h:135, w:100, d:120, kg:1000},
+  'RK-029':  {h:135, w:100, d:120, kg:1000},
+  'FL-002':  {h:200, w:200, d:200, kg:5000},
 };
 
-const $ = id => document.getElementById(id);
-const fmt = n => Number(n).toLocaleString('es-CL');
-const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let DATA = null, ZONE = null, QUERY = '';
-
-// ── Estadísticas calculadas en el navegador (no dependen del bloque stats del JSON) ──────
-function zoneStats(z) {
-  const s = { slots: 0, occ: 0, multi: 0, n: [0, 0, 0, 0] };
-  for (const bays of Object.values(z.aisles)) for (const rows of Object.values(bays)) for (const r of rows) {
-    s.slots++; if (r[2] > 0) s.occ++; if (r[2] > 1) s.multi++; if (r[2] >= 1) s.n[Math.min(r[2], 4) - 1]++;
-  }
-  return s;
-}
-function aisleStats(bays) {
-  let slots = 0, occ = 0;
-  for (const rows of Object.values(bays)) for (const r of rows) { slots++; if (r[2] > 0) occ++; }
-  return { slots, occ };
-}
-const pct = (a, b) => b ? (a / b * 100) : 0;
-
-// ── Antigüedad (hora de Chile) ───────────────────────────────────────────────────────────
-function chileNowMs() { return Date.parse(new Date().toLocaleString('sv-SE', { timeZone: 'America/Santiago' }).replace(' ', 'T') + 'Z'); }
-function ageHours(dateStr, timeStr) { return (chileNowMs() - Date.parse(dateStr + 'T' + timeStr + 'Z')) / 3600000; }
-function humanAge(h) { return h < 1 ? Math.max(0, Math.round(h * 60)) + ' min' : h < 48 ? h.toFixed(1) + ' h' : Math.floor(h / 24) + ' días'; }
-
-function renderMeta() {
-  const d = DATA, b = $('banner');
-  const hGen = ageHours(d.date, d.updated);
-  const cut = d.stock_cut ? d.stock_cut.replace(' ', 'T') : null;
-  const hCut = cut ? (chileNowMs() - Date.parse(cut + 'Z')) / 3600000 : null;
-  $('meta').innerHTML = `Último movimiento de stock <b>${esc(d.stock_cut || '—')}</b>${hCut != null ? ' (hace ' + humanAge(hCut) + ')' : ''}` +
-    ` &middot; archivo generado <b>${esc(d.date)} ${esc(d.updated)}</b> (hace ${humanAge(hGen)})`;
-  b.className = hGen > CONFIG.BAD_HOURS ? 'bad' : hGen > CONFIG.WARN_HOURS ? 'warn' : '';
-  b.textContent = hGen > CONFIG.BAD_HOURS ? `⚠ DATOS DESACTUALIZADOS: el archivo se generó hace ${humanAge(hGen)}`
-    : hGen > CONFIG.WARN_HOURS ? `Atención: el archivo se generó hace ${humanAge(hGen)}` : '';
-}
-
-function renderKpis() {
-  const t = { slots: 0, occ: 0, multi: 0, n: [0, 0, 0, 0] };
-  for (const z of Object.values(DATA.zones)) { const s = zoneStats(z); t.slots += s.slots; t.occ += s.occ; t.multi += s.multi; s.n.forEach((v, i) => t.n[i] += v); }
-  const k = (v, l) => `<div class="k"><b>${v}</b><span>${l}</span></div>`;
-  $('kpis').innerHTML = k(fmt(t.slots), 'Ubic. totales') + k(fmt(t.occ), 'Ubic. ocupadas') + k(pct(t.occ, t.slots).toFixed(1) + '%', '% ocupación') +
-    k(pct(t.multi, t.occ).toFixed(0) + '%', '% multi-SKU') + k(fmt(t.n[0]), '1 SKU') + k(fmt(t.n[1]), '2 SKUs') + k(fmt(t.n[2]), '3 SKUs') + k(fmt(t.n[3]), '4+ SKUs');
-}
-
-function renderTabs() {
-  const zones = CONFIG.ZONE_ORDER.filter(z => DATA.zones[z]).concat(Object.keys(DATA.zones).filter(z => !CONFIG.ZONE_ORDER.includes(z)));
-  if (!ZONE || !DATA.zones[ZONE]) ZONE = zones[0];
-  $('tabs').innerHTML = zones.map(z => {
-    const s = zoneStats(DATA.zones[z]);
-    return `<div class="tab ${z === ZONE ? 'on' : ''}" data-z="${z}">${esc(CONFIG.ZONE_LABELS[z] || z)}<small>${pct(s.occ, s.slots).toFixed(0)}% ocup.</small></div>`;
-  }).join('');
-}
-
-// ── Mapa ─────────────────────────────────────────────────────────────────────────────────
-function slotCell(zona, aisle, bay, r) {
-  const id = r[5];
-  return `<div class="c n${Math.min(r[2], 4)}" data-id="${id}" data-n="${r[2]}" data-q="${r[3]}" data-s="${esc(r[4])}" title="${id} · ${r[2]} SKU · ${r[3]} un."></div>`;
-}
-
-function renderMap() {
-  const z = DATA.zones[ZONE], zs = zoneStats(z);
-  $('zinfo').textContent = `${fmt(zs.slots)} ubicaciones · ${fmt(zs.occ)} ocupadas (${pct(zs.occ, zs.slots).toFixed(1)}%) · ${Object.keys(z.aisles).length} pasillos`;
-  const onlyOcc = $('onlyOcc').checked;
-  const html = Object.keys(z.aisles).map(Number).sort((a, b) => a - b).filter(aisle => !onlyOcc || aisleStats(z.aisles[aisle]).occ > 0).map(aisle => {
-    const bays = z.aisles[aisle], as = aisleStats(bays);
-    const bayKeys = Object.keys(bays).map(Number).sort((a, b) => a - b);
-    let body;
-    const hasLevels = bayKeys.some(b => bays[b].some(r => r[0] > 0));
-    if (hasLevels) {
-      body = '<div class="bays">' + bayKeys.map(b => {
-        const byLvl = {};
-        bays[b].forEach(r => (byLvl[r[0]] = byLvl[r[0]] || []).push(r));
-        const rows = Object.keys(byLvl).map(Number).sort((x, y) => y - x).map(l =>
-          '<div class="lv">' + byLvl[l].sort((p, q) => p[1] - q[1]).map(r => slotCell(ZONE, aisle, b, r)).join('') + '</div>').join('');
-        return `<div class="bay">${rows}<div class="bn">${b}</div></div>`;
-      }).join('') + '</div>';
-    } else {
-      body = '<div class="floor">' + bayKeys.map(b => bays[b].map(r => slotCell(ZONE, aisle, b, r)).join('')).join('') + '</div>';
-    }
-    return `<div class="aisle"><div class="ah"><b>Pasillo ${String(aisle).padStart(3, '0')}</b><span>${fmt(as.slots)} ubic. · ${fmt(as.occ)} ocupadas (${pct(as.occ, as.slots).toFixed(0)}%)</span>` +
-      `<div class="bar"><div style="width:${pct(as.occ, as.slots).toFixed(0)}%"></div></div></div><div class="scroll">${body}</div></div>`;
-  }).join('');
-  $('map').innerHTML = html;
-  applySearch();
-}
-
-// ── Búsqueda ─────────────────────────────────────────────────────────────────────────────
-function applySearch() {
-  const q = QUERY.trim().toUpperCase(), cells = $('map').querySelectorAll('.c');
-  let hits = [];
-  cells.forEach(c => {
-    const m = q.length >= 3 && (c.dataset.id.includes(q) || c.dataset.s.toUpperCase().includes(q));
-    c.classList.toggle('hit', !!m);
-    if (m && hits.length < 15) hits.push(c.dataset.id);
+function _maxProductDims(skuList){
+  let h=0, l=0, w=0, kg=0, count=0;
+  (skuList||[]).forEach(sk=>{
+    const c=CATALOG[sk]||{};
+    if(c.dim_h!=null){h=Math.max(h,c.dim_h); count++;}
+    if(c.dim_l!=null) l=Math.max(l,c.dim_l);
+    if(c.dim_w!=null) w=Math.max(w,c.dim_w);
+    if(c.dim_kg!=null) kg=Math.max(kg,c.dim_kg);
   });
-  const total = q.length >= 3 ? $('map').querySelectorAll('.c.hit').length : 0;
-  $('hits').innerHTML = q.length >= 3
-    ? `${total} coincidencias en ${esc(CONFIG.ZONE_LABELS[ZONE] || ZONE)}: ` + hits.map(h => `<button data-id="${h}">${h}</button>`).join('') + (total > 15 ? '…' : '')
-    : '';
+  return count>0 ? {h,l,w,kg} : null;
 }
 
-function showDetail(el) {
-  const d = $('det');
-  d.style.display = 'block';
-  d.innerHTML = `<b>Ubicación</b> <code>${esc(el.dataset.id)}</code> &middot; <b>${el.dataset.n}</b> SKU &middot; <b>${fmt(el.dataset.q)}</b> unidades` +
-    (el.dataset.s ? ` &middot; SKUs: <code>${esc(el.dataset.s.split(',').join('</code> <code>'))}</code>${Number(el.dataset.n) > 8 ? ' …' : ''}` : ' &middot; vacía');
+function _fitCheck(prodDims, clase){
+  if(!prodDims) return null;  // sin datos = no mostrar indicador
+  const sd = SLOT_DIMS[clase];
+  if(!sd) return null;        // clase desconocida = no mostrar
+  const maxProd = Math.max(prodDims.h, prodDims.l, prodDims.w);
+  const minSlot = Math.min(sd.h, sd.w, sd.d);
+  const overWeight = prodDims.kg > sd.kg;
+  if(overWeight || maxProd > sd.h) return 'rojo';
+  if(maxProd > minSlot * 0.8)      return 'amarillo';
+  return 'verde';
 }
 
-// ── Carga y eventos ──────────────────────────────────────────────────────────────────────
-async function load() {
-  try {
-    const r = await fetch(CONFIG.DATA_URL + '?t=' + Date.now(), { cache: 'no-store' });
-    if (!r.ok) throw new Error('HTTP ' + r.status + ' al leer ' + CONFIG.DATA_URL);
-    const d = await r.json();
-    const changed = !DATA || d.updated !== DATA.updated || d.date !== DATA.date;
-    DATA = d;
-    $('whName').textContent = d.wh || CONFIG.WH;
-    document.title = 'Ocupación ' + (d.wh || CONFIG.WH);
-    renderMeta();
-    if (changed) { renderKpis(); renderTabs(); renderMap(); }
-  } catch (e) {
-    $('banner').className = 'bad'; $('banner').textContent = 'Error al cargar los datos: ' + e.message;
+function _sugerenciasGuardado(isNT, skuList){
+  if(CD_SIN_SUGERENCIAS) return '<div style="font-size:9px;color:#8a6d00;background:#FFF8E1;border:1px solid #F5E1A4;border-radius:4px;padding:6px 8px;margin:6px 0">Sugerencias de guardado no disponibles en este CD: las reglas por zona aún no están definidas.</div>';
+  const skus = skuList || [];
+  const dominios = skus.map(sk=>(CATALOG[sk]||{}).domain||'').filter(Boolean);
+  const prodDims = _maxProductDims(skus);
+
+  const blMatches  = dominios.filter(d=>BL_AFFINITY_DOMAINS.has(d));
+  const rkLowMatches = dominios.filter(d=>RK_LOW_DOMAINS.has(d));
+
+  // Prioridad: NT > BL affinity > RK bajo > RK normal
+  const esBL    = !isNT && blMatches.length > 0 && rkLowMatches.length === 0;
+  const esRKLow = !isNT && !esBL && rkLowMatches.length > 0;
+
+  const candidatos = [];
+
+  function _bayClase(b){
+    const clases = b.slots.map(s=>s.clase||'').filter(Boolean);
+    if(!clases.length) return b.zone==='BL'?'BL_01':'RK-027';
+    const freq={}; clases.forEach(c=>{freq[c]=(freq[c]||0)+1;});
+    return Object.entries(freq).sort((a,b2)=>b2[1]-a[1])[0][0];
+  }
+
+  if(esBL){
+    Object.values(bayMap).forEach(b=>{
+      if(b.zone!=='BL') return;
+      const vacios = b.slots.filter(s=>!s.skus||s.skus.length===0).length;
+      const total = b.slots.length;
+      if(!vacios) return;
+      const pct = Math.round((total-vacios)/total*100);
+      const bayLabel = b.key || `BL-${b.aisle}-${String(b.bay).padStart(3,'0')}`;
+      const clase = _bayClase(b);
+      candidatos.push({bayLabel, zona:'BL', libres:vacios, total, pct, clase});
+    });
+    candidatos.sort((a,b2)=>b2.libres-a.libres||a.pct-b2.pct);
+
+  } else if(esRKLow){
+    const FIRST_AISLES = {ZA:[5,6,7,8,9,10], ZA2:[13,14,15,16], ZB:[101,102,103,104,105,106,107,108]};
+    const allFirstAisles = new Set([...FIRST_AISLES.ZA,...FIRST_AISLES.ZA2,...FIRST_AISLES.ZB]);
+    Object.values(bayMap).forEach(b=>{
+      if(b.zone!=='RK') return;
+      const esFirstAisle = allFirstAisles.has(b.aisle);
+      const slotsLow = b.slots.filter(s=>s.level<=2);
+      const libresLow = slotsLow.filter(s=>!s.skus||s.skus.length===0).length;
+      if(!libresLow) return;
+      const totalLow = slotsLow.length;
+      const pct = Math.round((totalLow-libresLow)/totalLow*100);
+      const zona = b.aisle>=101?'Z-B':b.aisle>=13?'Z-A2':'Z-A';
+      const bayLabel = `P${String(b.aisle).padStart(3,'0')}-${String(b.bay).padStart(3,'0')}`;
+      const clase = _bayClase(b);
+      candidatos.push({bayLabel, zona, libres:libresLow, total:totalLow, pct, prioridad: esFirstAisle?1:0, clase});
+    });
+    candidatos.sort((a,b2)=>b2.prioridad-a.prioridad||b2.libres-a.libres||a.pct-b2.pct);
+
+  } else {
+    Object.values(bayMap).forEach(b=>{
+      if(b.zone!=='RK') return;
+      if(isNT && (b.aisle<101||b.aisle>123)) return;
+      const total = b.slots.length;
+      if(!total) return;
+      const ocupados = b.slots.filter(s=>s.skus&&s.skus.length>0).length;
+      const libres = total - ocupados;
+      if(!libres) return;
+      const pct = Math.round(ocupados/total*100);
+      const zona = b.aisle>=101?'Z-B':b.aisle>=13?'Z-A2':'Z-A';
+      const bayLabel = `P${String(b.aisle).padStart(3,'0')}-${String(b.bay).padStart(3,'0')}`;
+      const clase = _bayClase(b);
+      candidatos.push({bayLabel, zona, libres, total, pct, clase});
+    });
+    candidatos.sort((a,b2)=>b2.libres-a.libres||a.pct-b2.pct);
+  }
+
+  const top = candidatos.slice(0,6);
+  if(!top.length) return '<div style="font-size:9px;color:#999999;padding:8px 0">No hay ubicaciones disponibles en este momento.</div>';
+
+  let motivoHtml = '';
+  if(esBL){
+    const domLabel = [...new Set(blMatches)].slice(0,2).map(d=>d.replace('MLC-','').replace(/_/g,' ').toLowerCase()).join(', ');
+    motivoHtml = `<div style="font-size:8px;color:#8B5CF6;background:#F3F0FF;border-radius:4px;padding:3px 7px;margin-bottom:6px;display:inline-block">📦 Afinidad BL: ${domLabel}</div>`;
+  } else if(esRKLow){
+    const domLabel = [...new Set(rkLowMatches)].slice(0,2).map(d=>d.replace('MLC-','').replace(/_/g,' ').toLowerCase()).join(', ');
+    motivoHtml = `<div style="font-size:8px;color:#00A650;background:#F0FFF4;border-radius:4px;padding:3px 7px;margin-bottom:6px;display:inline-block">🐾 RK nivel bajo (1-2), primeros pasillos: ${domLabel}</div>`;
+  } else if(isNT){
+    motivoHtml = `<div style="font-size:8px;color:#3483FA;background:#EBF2FF;border-radius:4px;padding:3px 7px;margin-bottom:6px;display:inline-block">🔵 NT → zona Z-B preferida</div>`;
+  }
+
+  const col = esBL?'#8B5CF6':'#3483FA';
+  const filas = top.map(c=>{
+    const bar = `<div style="height:4px;border-radius:2px;background:#EEEEEE;margin-top:2px"><div style="width:${c.pct}%;height:4px;border-radius:2px;background:${c.pct>80?'#F23D4F':c.pct>50?'#F5A623':'#00A650'}"></div></div>`;
+    const nivelTag = esRKLow?`<span style="font-size:7px;color:#00A650;background:#F0FFF4;border-radius:3px;padding:1px 4px;border:1px solid #00A650">N1-2</span>`:'';
+    const fit = _fitCheck(prodDims, c.clase||'');
+    const fitTag = fit==='verde' ? `<span title="Producto cabe en esta ubicación" style="font-size:9px">✅</span>`
+                 : fit==='amarillo' ? `<span title="Verificar tamaño antes de guardar" style="font-size:9px">⚠️</span>`
+                 : fit==='rojo' ? `<span title="Producto puede no caber — verificar dimensiones" style="font-size:9px">🚫</span>`
+                 : '';
+    return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #F0F0F0">
+      <span style="font-family:monospace;font-size:10px;font-weight:700;color:${col};min-width:80px">${c.bayLabel}</span>
+      <span style="font-size:8px;color:#999999;min-width:28px">${c.zona}</span>
+      ${nivelTag}${fitTag}
+      <div style="flex:1">${bar}</div>
+      <span style="font-size:9px;color:#00A650;font-weight:700;white-space:nowrap">${c.libres} lib.</span>
+      <span style="font-size:8px;color:#999999">${c.pct}% lleno</span>
+    </div>`;
+  }).join('');
+  return motivoHtml + filas;
+}
+
+function _productosMovable(list, pw){
+  // Muestra productos del movable desde CHK_DATA o resumen de PW_DATA
+  if(list.length){
+    const rows=list.slice(0,15).map(o=>{
+      const cat=CATALOG[o.sku]||{};
+      const title=cat.title||'';
+      const short=title.length>32?title.slice(0,32)+'…':title;
+      const img=cat.img?`<img src="${cat.img}" style="width:24px;height:24px;object-fit:contain;border-radius:3px;margin-right:5px" onerror="this.style.display='none'">`:'';
+      return `<div style="display:flex;align-items:center;gap:4px;padding:4px 0;border-bottom:1px solid #F5F5F5">
+        ${img}
+        <div style="flex:1;min-width:0">
+          <div style="font-family:monospace;font-size:9px;color:#3483FA">${o.sku}</div>
+          <div style="font-size:9px;color:#333333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${title}">${short||'—'}</div>
+        </div>
+        <span style="font-size:10px;font-weight:700;color:#F5A623;white-space:nowrap">${o.qty_chk||o.qty_dec||0} u</span>
+      </div>`;
+    }).join('');
+    const more=list.length>15?`<div style="font-size:8px;color:#999999;padding:4px 0;text-align:center">+${list.length-15} SKUs más</div>`:'';
+    return rows+more;
+  }
+  // Sin CHK_DATA — usar lista de SKUs de PW_DATA si existe
+  if(!pw||!pw.sku_count) return '<div style="font-size:9px;color:#999999;padding:8px 0">Sin detalle de productos disponible (pendiente de checkin).</div>';
+  const skuList = pw.skus||[];
+  const skuCards = skuList.slice(0,20).map(sk=>{
+    const cat=CATALOG[sk]||{};
+    const title=cat.title||'';
+    const short=title.length>32?title.slice(0,32)+'…':title;
+    const img=cat.img?`<img src="${cat.img}" style="width:24px;height:24px;object-fit:contain;border-radius:3px;margin-right:5px" onerror="this.style.display='none'">`:'<div style="width:24px;height:24px;background:#F5F5F5;border-radius:3px;margin-right:5px;flex-shrink:0"></div>';
+    return `<div style="display:flex;align-items:center;gap:4px;padding:4px 0;border-bottom:1px solid #F5F5F5">
+      ${img}
+      <div style="flex:1;min-width:0">
+        <div style="font-family:monospace;font-size:9px;color:#3483FA">${sk}</div>
+        <div style="font-size:9px;color:#333333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${title}">${short||'—'}</div>
+        ${cat.brand?`<div style="font-size:8px;color:#999999">${cat.brand}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+  const more=skuList.length>20?`<div style="font-size:8px;color:#999999;padding:4px 0;text-align:center">+${skuList.length-20} SKUs más</div>`:'';
+  const header=`<div style="font-size:9px;color:#666666;padding:4px 0 6px">
+    <span style="color:#999999">SKUs:</span> <b style="color:#F5A623">${pw.sku_count}</b>&nbsp;&nbsp;
+    <span style="color:#999999">Unidades:</span> <b style="color:#F5A623">${pw.qty_checkin||'—'}</b>&nbsp;&nbsp;
+    <span style="color:#999999">Seller:</span> <b style="color:#333333">${pw.seller||'—'}</b>
+  </div>`;
+  return header + (skuCards||'') + more;
+}
+
+function chkRenderMovable(){
+  const mv=CHK_FILTER._movable;
+  const isId=CHK_FILTER._is_id||'';
+  // Buscar primero por movable, luego por IS
+  let list=CHK_DATA.filter(o=>o.sla!=='done'&&(o.movable||'')===mv);
+  if(!list.length && isId){
+    list=CHK_DATA.filter(o=>o.sla!=='done'&&String(o.is_id||o.inbound_id||'')===String(isId));
+  }
+  const tbody=document.getElementById('chk-tbody');
+  const pw=PW_ALL.find(g=>g.movable===mv)||{};
+  const isNT=mv&&mv.includes('-NT-');
+  const slaCol=pw.sla==='over'?'#F23D4F':pw.sla==='warn'?'#F5A623':'#00A650';
+  const slaTxt=pw.sla==='over'?`🔴 Vencido ${fmtHoras(pw.mins_restantes!=null?Math.abs(pw.mins_restantes):null)}`
+              :pw.sla==='warn'?`⚠️ ${fmtHoras(pw.mins_restantes)} restantes`
+              :pw.mins_restantes!=null?`🟢 ${fmtHoras(pw.mins_restantes)} restantes`:'—';
+  const wmsUrl=isId?`https://wms.adminml.com/reports/totes?inbound_id=${isId}&resource=PUT_AWAY`:'';
+
+  const movSkus=list.map(o=>o.sku);
+  const panelProductos=_productosMovable(list,pw);
+  const panelSugerencias=_sugerenciasGuardado(isNT, movSkus);
+  const dims2=_maxProductDims(movSkus);
+  const dimsHtml2=dims2
+    ?`<div style="font-size:8px;color:#555;background:#F8F8F8;border-radius:4px;padding:3px 7px;margin-bottom:6px;display:inline-block">📐 Máx: ${dims2.h>0?dims2.h+'cm H ':''}${dims2.l>0?dims2.l+'cm L ':''}${dims2.w>0?dims2.w+'cm W ':''}${dims2.kg>0?'· '+dims2.kg+'kg':''}</div>`
+    :'';
+
+  const infoCard=`
+    <div style="background:#FFFFFF;border:1px solid #D9D9D9;border-radius:8px;padding:12px 14px;max-width:560px;margin:0 auto">
+      ${pw.shipment_type||pw.seller||pw.sku_count?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:10px;margin-bottom:10px">
+        <div><span style="color:#999999">Tipo</span><br><b style="color:#333333">${pw.shipment_type||'—'}</b></div>
+        <div><span style="color:#999999">Seller</span><br><b style="color:#333333">${pw.seller||'—'}</b></div>
+        <div><span style="color:#999999">Creado</span><br><b style="color:#666666">${pw.pw_created||'—'}</b></div>
+        <div><span style="color:#999999">SLA</span><br><b style="color:${slaCol}">${slaTxt}</b></div>
+      </div>`:''}
+
+      <div style="font-size:9px;font-weight:700;color:#333333;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid #E8E8E8">
+        📦 Productos del movable
+      </div>
+      <div style="margin-bottom:12px">${panelProductos}</div>
+
+      <div style="font-size:9px;font-weight:700;color:#333333;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid #E8E8E8">
+        📍 Sugerencias de guardado
+      </div>
+      ${dimsHtml2}
+      <div style="margin-bottom:8px">${panelSugerencias}</div>
+
+      ${wmsUrl?`<a href="${wmsUrl}" target="_blank" style="display:block;text-align:center;font-size:9px;padding:5px;border-radius:6px;background:#F5F5F5;color:#3483FA;text-decoration:none;border:1px solid #2968C8;margin-top:4px">🔗 Ver IS ${isId} en WMS</a>`:''}
+    </div>`;
+
+  if(list.length){
+    tbody.innerHTML=list.map(o=>{
+      const cat=CATALOG[o.sku]||{};
+      const title=cat.title||'';
+      const shortTitle=title.length>28?title.slice(0,28)+'…':title;
+      return `<tr onclick="chkSelItem(${JSON.stringify(o).replace(/"/g,'&quot;')})">
+        <td>${chkSlaLabel(o)}</td>
+        <td><span style="font-family:monospace;font-size:10px;color:#3483FA">${o.sku}</span></td>
+        <td><span style="color:#333333;font-size:9px" title="${title}">${shortTitle||'—'}</span></td>
+        <td style="font-weight:700;color:#F5A623;text-align:center">${o.qty_chk||o.qty_dec||0}</td>
+        <td style="font-size:9px;color:#666666;white-space:nowrap">${o.chk_ts||'—'}</td>
+        <td style="font-size:9px;color:#666666;white-space:nowrap">${fmtHoras(o.mins_since_chk)}</td>
+        <td><span style="font-size:9px;font-family:monospace;font-weight:700;color:${o.movable?(o.movable.includes('NT')?'#3483FA':'#00A650'):'#999999'}">${o.movable||'—'}</span></td>
+        <td style="font-size:9px;color:#666666">${o.seller||'—'}</td>
+        <td style="font-size:9px;color:#999999;font-family:monospace">${o.is_id||'—'}</td>
+      </tr>`;
+    }).join('')+`<tr><td colspan="9" style="padding:12px">${infoCard}</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML=`<tr><td colspan="9" style="padding:16px">${infoCard}</td></tr>`;
+}
+
+function chkToggle(f){
+  CHK_FILTER[f]=!CHK_FILTER[f];
+  const btn=document.getElementById('chk-f-'+f);
+  btn.classList.toggle('on', CHK_FILTER[f]);
+  chkRender();
+}
+function chkFiltrar(){
+  CHK_FILTER.q=(document.getElementById('chk-search').value||'').toLowerCase().trim();
+  chkRender();
+}
+
+function chkToggleSort(){
+  CHK_SORT = CHK_SORT==='asc' ? 'desc' : 'asc';
+  chkRender();
+}
+
+function fmtHoras(mins){
+  if(mins==null) return '—';
+  const h=Math.floor(Math.abs(mins)/60), m=Math.abs(mins)%60;
+  return h>0 ? `${h}h${m>0?m+'m':''}` : `${m}min`;
+}
+// Recalcula mins restantes desde chk_ts en tiempo real (chk_ts está en hora Chile)
+function chkLiveMins(o){
+  if(o.sla==='done') return null;
+  if(!o.chk_ts) return o.mins_restantes;
+  // chk_ts es hora Chile (sin tz) — usamos offset actual del browser
+  const chkMs = new Date(o.chk_ts.replace(' ','T')).getTime();
+  const offsetMs = new Date().getTimezoneOffset() * 60000; // offset local browser
+  // Ajuste: forzar interpretación como America/Santiago (UTC-4 invierno / UTC-3 verano)
+  // Detectamos el offset real desde el browser
+  const chkUtcMs = chkMs + offsetMs;
+  const deadlineMs = chkUtcMs + CHK_SLA_WARN * 60000;
+  return Math.round((deadlineMs - Date.now()) / 60000);
+}
+
+function chkSlaLabel(o){
+  if(o.sla==='done') return `<span class="sla-badge sla-done">✓ Listo</span>`;
+  if(o.sla==='pw_active'){
+    const durMin = o.mins_pw_dur!=null ? o.mins_pw_dur : (o.mins_since_chk||0);
+    return `<span class="sla-badge sla-pw-active">📦 Putaway ${fmtHoras(durMin)}</span>`;
+  }
+  const rest = chkLiveMins(o);
+  const sla = rest==null?'unknown': rest<0?'over': rest<120?'warn':'ok';
+  if(sla==='over'){
+    const venc = rest!=null ? Math.abs(rest) : (o.mins_since_chk||0);
+    return `<span class="sla-badge sla-over">🔴 Vencido ${fmtHoras(venc)}</span>`;
+  }
+  if(sla==='warn'){
+    return `<span class="sla-badge sla-warn">⚠ ${fmtHoras(rest)} restantes</span>`;
+  }
+  if(sla==='ok'){
+    return `<span class="sla-badge sla-ok">⏱ ${fmtHoras(rest)} restantes</span>`;
+  }
+  return `<span class="sla-badge sla-unknown">—</span>`;
+}
+
+function chkRender(){
+  const {q, pend, over, done, nt} = CHK_FILTER;
+  const list = CHK_DATA.filter(o=>{
+    const liveSlaVal = o.sla==='done'?'done': o.sla==='pw_active'?'pw_active': (()=>{const r=chkLiveMins(o); return r==null?'unknown':r<0?'over':r<120?'warn':'ok';})();
+    if(liveSlaVal==='done'      && !done) return false;
+    if(liveSlaVal==='over'      && !over) return false;
+    if((liveSlaVal==='ok'||liveSlaVal==='warn'||liveSlaVal==='unknown'||liveSlaVal==='pw_active') && !pend) return false;
+    if(nt && !o.is_nt) return false;
+    if(q && !o.sku.toLowerCase().includes(q) && !(o.inbound_id||'').includes(q) &&
+       !(o.seller||'').toLowerCase().includes(q) &&
+       !(CATALOG[o.sku]||{}).title?.toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  // Ordenar por mins_restantes
+  list.sort((a,b)=>{
+    const ra=a.mins_restantes??999999, rb=b.mins_restantes??999999;
+    return CHK_SORT==='asc' ? ra-rb : rb-ra;
+  });
+
+  const btn=document.getElementById('chk-sort-btn');
+  if(btn) btn.textContent = CHK_SORT==='asc' ? '↑ Mayor' : '↓ Menor';
+
+  const tbody=document.getElementById('chk-tbody');
+  tbody.innerHTML=list.slice(0,300).map(o=>{
+    const cat=CATALOG[o.sku]||{};
+    const title=cat.title||'';
+    const shortTitle=title.length>28?title.slice(0,28)+'…':title;
+    const ntRow=o.is_nt?'background:#EBF2FF;border-left:3px solid #3483FA;':'';
+    return `<tr class="${CHK_SEL===o.sku+o.chk_ts?'chk-sel':''}" style="${ntRow}" onclick="chkSelItem(${JSON.stringify(o).replace(/"/g,'&quot;')})">
+      <td>${chkSlaLabel(o)}${o.is_nt?'<span style="display:inline-block;margin-left:4px;font-size:8px;padding:1px 4px;border-radius:3px;background:#3483FA;color:#fff;font-weight:700;vertical-align:middle">NT</span>':''}</td>
+      <td><span style="font-family:monospace;font-size:10px;color:${o.en_putaway?'#3483FA':'#3483FA'}">${o.sku}</span></td>
+      <td><span style="color:#333333;font-size:9px" title="${title}">${shortTitle||'—'}</span></td>
+      <td style="font-weight:700;color:#F5A623;text-align:center">${o.qty_chk||o.qty_dec||0}</td>
+      <td style="font-size:9px;color:#666666;white-space:nowrap">${o.chk_ts||'—'}</td>
+      <td style="font-size:9px;color:#666666;white-space:nowrap">${o.pw_fin_ts||o.pw_inicio_ts||'—'}</td>
+      <td><span style="font-size:9px;font-family:monospace;font-weight:700;color:${o.movable?((o.is_nt||o.movable.includes('-NT-'))?'#3483FA':'#00A650'):'#999999'}">${o.movable||'—'}</span></td>
+      <td style="font-size:9px;color:#666666">${o.seller||'—'}</td>
+      <td style="font-size:9px;color:#999999;font-family:monospace">${o.inbound_id||'—'}</td>
+    </tr>`;
+  }).join('');
+  if(list.length>300){
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td colspan="10" style="text-align:center;padding:8px;color:#999999;font-size:9px">Mostrando 300 de ${list.length} — refina la búsqueda</td>`;
+    tbody.appendChild(tr);
   }
 }
-$('tabs').addEventListener('click', e => { const t = e.target.closest('.tab'); if (t) { ZONE = t.dataset.z; renderTabs(); renderMap(); } });
-$('map').addEventListener('click', e => { const c = e.target.closest('.c'); if (c) showDetail(c); });
-$('hits').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; const c = $('map').querySelector(`.c[data-id="${b.dataset.id}"]`); if (c) { c.scrollIntoView({ block: 'center', inline: 'center' }); showDetail(c); } });
-$('q').addEventListener('input', e => { QUERY = e.target.value; applySearch(); });
-$('onlyOcc').addEventListener('change', renderMap);
-// Enlaces directos: ?zone=BL  y  ?occ=1 (solo pasillos con stock)
-const _qs = new URLSearchParams(location.search);
-if (_qs.get('zone')) ZONE = _qs.get('zone').toUpperCase();
-if (_qs.get('occ') === '1') $('onlyOcc').checked = true;
-load();
-setInterval(load, CONFIG.REFRESH_SECONDS * 1000);
-setInterval(() => { if (DATA) renderMeta(); }, 30000);
-</script></body></html>
+
+function chkClearSel(){
+  CHK_SEL=null;
+  document.querySelectorAll('#chk-tbody tr').forEach(tr=>tr.classList.remove('chk-sel'));
+  document.getElementById('chk-det-hdr').textContent='Detalle';
+  renderPutawaySLA();
+}
+
+function chkSelItem(o){
+  const key=o.sku+o.chk_ts;
+  if(CHK_SEL===key){ chkClearSel(); return; }
+  CHK_SEL = key;
+  document.querySelectorAll('#chk-tbody tr').forEach(tr=>{
+    const skuEl=tr.querySelector('span[style*="58a6ff"]');
+    tr.classList.toggle('chk-sel', skuEl&&skuEl.textContent===o.sku);
+  });
+
+  const cat=CATALOG[o.sku]||{};
+  const chkImgId=`img-chk-${(o.sku||'').replace(/[^a-z0-9]/gi,'_')}`;
+  const imgHtml=cat.item_id
+    ?`<img id="${chkImgId}" src="" style="width:60px;height:60px;object-fit:contain;border-radius:4px;border:1px solid #D9D9D9;background:#EBEBEB;display:block;margin:0 auto 8px" onerror="this.style.display='none'">`
+    :(cat.img?`<img src="${cat.img}" style="width:60px;height:60px;object-fit:contain;border-radius:4px;border:1px solid #D9D9D9;background:#EBEBEB;display:block;margin:0 auto 8px" onerror="this.style.display='none'">`:'' );
+  if(cat.item_id) setTimeout(()=>fetchMeliImg(cat.item_id, chkImgId), 100);
+
+  // SLA visual
+  const slaColor = o.sla==='over'?'#F23D4F':o.sla==='warn'?'#F5A623':o.sla==='done'?'#00A650':'#00A650';
+  const slaTxt   = o.sla==='done'?`Completado en ${o.mins_to_pw!=null?o.mins_to_pw+'min':'?'}`
+                  :o.sla==='over'?`⚠ Sobre SLA — ${o.mins_since_chk}min esperando`
+                  :o.sla==='warn'?`Atención — ${o.mins_since_chk}min sin putaway`
+                  :`${o.mins_since_chk!=null?o.mins_since_chk+'min':'—'} desde check-in`;
+
+  // Sugerencias de putaway si está pendiente
+  let sugHtml = '';
+  if(o.sla!=='done' && SUG_READY && o.sku){
+    const cat2=CATALOG[o.sku]||{};
+    const entry={sku:o.sku,domain:cat2.domain||cat2.category||'',brand:cat2.brand||''};
+    const scored=SUG_SLOTS.map(sl=>{
+      const {score,tags,stars}=scoreSugerencia(sl,o.sku,entry.domain,entry.brand);
+      return {...sl,score,tags,stars};
+    }).sort((a,b)=>b.score-a.score).slice(0,5);
+
+    sugHtml=`<div style="font-size:9px;color:#999999;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin:10px 0 6px">📍 Sugerencias de putaway</div>
+    ${scored.map((sl,i)=>`
+      <div class="chk-sug-card">
+        <div class="chk-sug-addr">${i+1}. ${sl.id} <span style="color:#F5A623;margin-left:4px">${sl.stars}</span></div>
+        <div class="chk-sug-meta">
+          <span class="inv-area-tag inv-area-${(sl.area||'').toLowerCase()}">${sl.area}</span>
+          ${sl.pct_vol!=null?`<span>Vol: <b style="color:${volColor(sl.pct_vol)}">${sl.pct_vol}%</b></span>`:''}
+          <span>${sl.tags.map(t=>t.txt).join(' · ')}</span>
+          <span style="margin-left:auto;color:#F5A623;font-weight:700">${sl.score}pts</span>
+        </div>
+      </div>`).join('')}`;
+  } else if(o.estado && o.estado!=='pendiente'){
+    sugHtml=`<div style="font-size:9px;color:#00A650;margin-top:8px">✓ Estado: <b>${o.estado}</b></div>`;
+  }
+
+  document.getElementById('chk-det-hdr').innerHTML=`<span style="color:#3483FA">${o.sku}</span> <span style="font-size:9px;color:#999999">· Inbound ${o.inbound_id||'—'}</span>`;
+  document.getElementById('chk-det-body').innerHTML=`
+    ${imgHtml}
+    <div style="text-align:center;margin-bottom:8px">
+      <div style="font-size:11px;font-weight:700;color:#333333">${cat.title||o.sku}</div>
+      ${cat.brand?`<div style="font-size:9px;color:#666666">${cat.brand}</div>`:''}
+      ${cat.ean?`<div style="font-size:9px;color:#999999;font-family:monospace">EAN: ${cat.ean}</div>`:''}
+    </div>
+    <div style="background:#F5F5F5;border-radius:4px;padding:8px 10px;margin-bottom:8px;text-align:center">
+      <div style="font-size:13px;font-weight:700;color:${slaColor}">${slaTxt}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;font-size:9px">
+      <div style="background:#FFFFFF;border-radius:4px;padding:6px 8px">
+        <div style="color:#999999;margin-bottom:2px">CANTIDAD</div>
+        <div style="font-size:14px;font-weight:700;color:#F5A623">${o.qty_chk||o.qty_dec||0}</div>
+      </div>
+      <div style="background:#FFFFFF;border-radius:4px;padding:6px 8px">
+        <div style="color:#999999;margin-bottom:2px">CHECK-IN</div>
+        <div style="color:#333333">${o.chk_ts||'—'}</div>
+      </div>
+      <div style="background:#FFFFFF;border-radius:4px;padding:6px 8px">
+        <div style="color:#999999;margin-bottom:2px">VENDOR / SELLER</div>
+        <div style="color:#333333">${o.seller||'—'}</div>
+      </div>
+      <div style="background:#FFFFFF;border-radius:4px;padding:6px 8px">
+        <div style="color:#999999;margin-bottom:2px">PROCESO</div>
+        <div style="color:#333333">${o.tipo||o.estado||'—'}</div>
+      </div>
+    </div>
+    ${sugHtml}
+  `;
+}
+
+// ── Fetch imagen desde API Meli (browser) ────────────────────────────────────
+const _imgCache = {};
+async function fetchMeliImg(itemId, elemId) {
+  if (!itemId) return;
+  try {
+    let thumb = _imgCache[itemId];
+    if (!thumb) {
+      const r = await fetch(`https://api.mercadolibre.com/items/${itemId}?attributes=thumbnail`, {cache:'force-cache'});
+      if (!r.ok) return;
+      const d = await r.json();
+      thumb = (d.thumbnail||'').replace('http://','https://').replace('-I.jpg','-O.jpg');
+      _imgCache[itemId] = thumb;
+    }
+    const el = document.getElementById(elemId);
+    if (el && thumb) el.src = thumb;
+  } catch(e) {}
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+// Primero: archivos pequeños necesarios para el mapa (~10 MB total)
+Promise.all([loadDisponibles(), loadBLLayout(), loadSinMovimiento()])
+  .then(()=>loadData())
+  .then(()=>{
+    // Después del mapa: cargar archivos pesados en segundo plano
+    loadResp();        // 6.5 MB — tooltips put-away
+    loadVolumetria();  // 14.5 MB — modo volumen
+    loadCatalog();     // 61 MB — nombres e imágenes (background)
+  });
+// checkin (2 MB) se carga solo cuando se abre su pestaña
+
+// ── Buscador de ubicaciones ───────────────────────────────────────────────
+let _locIdx=null;
+let _locSelIdx=-1;
+
+function _buildLocIdx(){
+  if(_locIdx) return;
+  _locIdx=[];
+  BAYS.forEach(b=>{
+    b.slots.forEach(s=>{
+      _locIdx.push({id:s.id, bayKey:`${b.zone}-${b.aisle}-${b.bay}`, level:s.level, pos:s.pos,
+        skus:s.skus.length, zone:b.zone, aisle:b.aisle, bay:b.bay});
+    });
+  });
+}
+
+function locSearchInput(q){
+  _locIdx=null; // rebuild on each keypress to get fresh data
+  const box=document.getElementById('loc-results');
+  q=q.trim().toUpperCase();
+  if(q.length<2){ box.style.display='none'; _locSelIdx=-1; return; }
+  _buildLocIdx();
+  const hits=_locIdx.filter(r=>r.id.toUpperCase().includes(q)).slice(0,30);
+  if(!hits.length){ box.innerHTML=`<div style="padding:8px 12px;color:#999999;font-size:10px">Sin resultados</div>`; box.style.display='block'; return; }
+  _locSelIdx=-1;
+  box.innerHTML=hits.map((r,i)=>{
+    const col=r.zone==='BL'?(r.skus>0?'#4da6ff':'#3483FA'):(r.skus===0?'#D9D9D9':r.skus>=4?'#F23D4F':r.skus===3?'#d07030':r.skus===2?'#F5A623':'#00A650');
+    const occ=r.skus>0?`<span style="color:${col};font-weight:700">${r.skus} SKU${r.skus!==1?'s':''}</span>`:`<span style="color:#999999">vacía</span>`;
+    return `<div class="loc-hit" data-idx="${i}" style="padding:6px 12px;cursor:pointer;border-bottom:1px solid #F5F5F5;display:flex;align-items:center;gap:10px"
+      onmouseenter="locHover(${i})" onclick="locGo(${i})">
+      <span style="font-family:monospace;font-size:11px;color:#333333;flex:1">${r.id.replace(q,'<mark style="background:#264f78;color:#333333;border-radius:2px">'+q+'</mark>')}</span>
+      ${occ}
+    </div>`;
+  }).join('');
+  box.style.display='block';
+  box._hits=hits;
+}
+
+function locHover(i){ _locSelIdx=i; _locHighlight(); }
+
+function _locHighlight(){
+  document.querySelectorAll('.loc-hit').forEach((el,i)=>{
+    el.style.background=i===_locSelIdx?'#F5F5F5':'';
+  });
+}
+
+function locSearchKey(e){
+  const box=document.getElementById('loc-results');
+  if(box.style.display==='none') return;
+  const hits=box._hits||[];
+  if(e.key==='ArrowDown'){ e.preventDefault(); _locSelIdx=Math.min(_locSelIdx+1,hits.length-1); _locHighlight(); }
+  else if(e.key==='ArrowUp'){ e.preventDefault(); _locSelIdx=Math.max(_locSelIdx-1,0); _locHighlight(); }
+  else if(e.key==='Enter' && _locSelIdx>=0){ e.preventDefault(); locGo(_locSelIdx); }
+  else if(e.key==='Escape'){ box.style.display='none'; document.getElementById('loc-search').blur(); }
+}
+
+function locGo(i){
+  const box=document.getElementById('loc-results');
+  const hits=box._hits||[];
+  const r=hits[i];
+  if(!r) return;
+  box.style.display='none';
+  document.getElementById('loc-search').value=r.id;
+
+  // Abrir la zona si está colapsada (RK)
+  if(r.zone!=='BL'){
+    const zd=ZONE_DEFS.find(z=>z.zp===r.zone&&z.aisles.includes(r.aisle));
+    if(zd && !openZones.has(zd.id)){ toggleZone(zd.id); }
+  }
+  // Cambiar pestaña BL si aplica
+  if(r.zone==='BL'){
+    const tab=BL_TABS.find(t=>t.aisles.includes(r.aisle));
+    if(tab && blTab!==tab.id) setBLTab(tab.id);
+  }
+
+  // Scroll a la celda y abrir modal
+  setTimeout(()=>{
+    const bayKey=r.bayKey;
+    const cell=document.querySelector(`[data-key="${CSS.escape(bayKey)}"][data-level="${r.level}"]`)
+      || document.querySelector(`[data-key="${CSS.escape(bayKey)}"]`);
+    if(cell){
+      cell.scrollIntoView({behavior:'smooth',block:'center'});
+      cell.style.outline='2px solid #fff';
+      setTimeout(()=>{ cell.style.outline=''; },1500);
+    }
+    // Abrir modal con el detalle
+    if(r.zone==='BL'){
+      abrirSlotModal(r.id, bayKey);
+    } else {
+      abrirBayLevelModal(bayKey, r.level);
+    }
+  }, r.zone!=='BL' ? 300 : 50);
+}
+
+// Cerrar dropdown al hacer click fuera
+document.addEventListener('click', e=>{
+  if(!e.target.closest('#loc-search') && !e.target.closest('#loc-results')){
+    document.getElementById('loc-results').style.display='none';
+  }
+});
+
+// ── Indicador de estado (GitHub Pages — sin servidor SSE) ─────────────────
+(function initStatus(){
+  const dot = document.getElementById('sse-dot');
+  const lbl = document.getElementById('sse-lbl');
+  dot.style.background='#00A650';
+  lbl.textContent='auto-refresh';
+  lbl.style.color='#00A650';
+})();
+try{ const _qs=new URLSearchParams(location.search), _tb=_qs.get('tab'), _bl=_qs.get('bl');
+  if(_tb) setTimeout(()=>switchTab(_tb),2500);      // enlace directo a una pestaña: ?tab=inv | chk
+  if(_bl) setTimeout(()=>setBLTab(_bl),2000);       // enlace directo a una parte de BL: ?bl=BL1 | BL2
+}catch(e){}
+</script>
+<!-- Modal de slot -->
+<div id="slot-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.7);align-items:center;justify-content:center" onclick="if(event.target===this)cerrarModal()">
+  <div style="background:#FFFFFF;border:1px solid #D9D9D9;border-radius:8px;width:420px;max-width:95vw;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.6)">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #D9D9D9;flex-shrink:0">
+      <div id="modal-title" style="font-family:monospace;font-weight:700;font-size:13px;color:#3483FA"></div>
+      <button onclick="cerrarModal()" style="background:none;border:none;color:#666666;font-size:18px;cursor:pointer;line-height:1;padding:0 4px">×</button>
+    </div>
+    <div id="modal-body" style="overflow-y:auto;padding:12px 16px;flex:1"></div>
+  </div>
+</div>
+
+<!-- Panel lateral Putaway -->
+<div id="pw-popup-overlay" onclick="pwClosePopup()"
+  style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.25);z-index:3000"></div>
+<div id="pw-popup-panel"
+  style="position:fixed;top:0;right:0;width:360px;max-width:95vw;height:100vh;background:#FFFFFF;
+         box-shadow:-4px 0 24px rgba(0,0,0,0.15);z-index:3001;overflow-y:auto;padding:20px 18px;
+         transform:translateX(100%);opacity:0;transition:transform 0.25s ease,opacity 0.2s ease">
+  <div id="pw-popup-body"></div>
+</div>
+</body>
+</html>

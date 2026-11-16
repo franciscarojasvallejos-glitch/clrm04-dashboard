@@ -1,125 +1,194 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
-fetch_ocupacion.py - Ocupacion de ubicaciones de un centro de distribucion (por defecto CLRM04, zonas RS/RK/BL).
-Genera data/ocupacion_<CD>.json con un formato compacto:
-
-  zones -> <zona> -> aisles -> <pasillo> -> <bay> -> [[nivel, posicion, n_skus, unidades, "SKU1,SKU2,...", "ID-UBICACION"], ...]
+fetch_ocupacion.py — Ocupación de ubicaciones (CD y zonas por variables WAREHOUSE y ZONES; por defecto CLRM04, RS/RK/BL)
+Genera data/ocupacion_<CD>.json
 
 Uso:
-  python fetch_ocupacion.py                       # CLRM04, zonas RS,RK,BL
-  python fetch_ocupacion.py --wh CLRM03           # otro CD
-  python fetch_ocupacion.py --zones RS,RK         # otras zonas
-  python fetch_ocupacion.py --watch 120           # refresca cada 120 s
-Requiere credenciales de gcloud (gcloud auth application-default login).
+  python fetch_ocupacion.py          # genera el snapshot
+  python fetch_ocupacion.py --watch  # refresca cada 60s
 """
-import json, os, sys, time, warnings
+import json, os, sys, time
 from datetime import datetime
 from zoneinfo import ZoneInfo
+import warnings
 warnings.filterwarnings('ignore')
-
-# Carpeta opcional con google-cloud-bigquery y dependencias (variable CLRM_LIBS) para entornos sin esos paquetes.
-_libs = os.environ.get('CLRM_LIBS') or os.path.join(os.path.expanduser('~'), 'clrm03-ocupacion-py', 'libs')
-if os.path.isdir(_libs):
-    sys.path.insert(0, _libs)
 from google.cloud import bigquery
 
-PROJECT = 'meli-bi-data'
-TZ = ZoneInfo('America/Santiago')
-MAX_SKUS_PER_SLOT = 8   # SKUs que se guardan por ubicacion (el conteo n_skus es siempre el real)
+PROJECT   = 'meli-bi-data'
+WAREHOUSE = os.environ.get('WAREHOUSE', 'CLRM04')
+ZONES     = [z.strip().upper() for z in os.environ.get('ZONES', 'RS,RK,BL').split(',') if z.strip()]
+ZONES_SQL = ', '.join("'" + z + "'" for z in ZONES)
+TZ        = ZoneInfo('America/Santiago')
+CAP_BY_ZONE = {'RS': 5, 'RK': 6, 'BL': 1}   # RS/RK: posiciones por nivel segun el layout de CLRM04 (RS=5, RK=2 -> se mantiene 6 como en CLRM03; validar)
 
-SQL = f"""
-WITH s AS (
-  SELECT ADDRESS_ID,
-         SPLIT(ADDRESS_ID, '-')[OFFSET(0)] AS zona,
-         CAST(ADRS_AISLE AS INT64) AS aisle, CAST(ADRS_BAY AS INT64) AS bay,
-         CAST(ADRS_LEVEL AS INT64) AS lvl, CAST(ADRS_POSITION AS INT64) AS pos
-  FROM `{PROJECT}.WHOWNER.LK_FBM_WMS_ADDRESSES`
-  WHERE WAREHOUSE_ID = @wh AND LOWER(ADRS_STATUS) = 'available'
-    AND SPLIT(ADDRESS_ID, '-')[OFFSET(0)] IN UNNEST(@zones)),
-k AS (
-  SELECT ADDRESS_ID,
-         COUNT(DISTINCT INVENTORY_ID) AS n, SUM(FBM_QUANTITY) AS qty,
-         ARRAY_AGG(INVENTORY_ID ORDER BY FBM_QUANTITY DESC LIMIT {MAX_SKUS_PER_SLOT}) AS skus
-  FROM `{PROJECT}.WHOWNER.BT_FBM_STOCK_3_ADDRESS`
-  WHERE WAREHOUSE_ID = @wh AND FBM_STOCK_STATUS = 'ok'
-    AND SPLIT(ADDRESS_ID, '-')[OFFSET(0)] IN UNNEST(@zones)
-  GROUP BY ADDRESS_ID)
-SELECT s.ADDRESS_ID AS id, s.zona, s.aisle, s.bay, s.lvl, s.pos, IFNULL(k.n, 0) AS n, IFNULL(k.qty, 0) AS qty, k.skus AS skus
-FROM s LEFT JOIN k USING (ADDRESS_ID)
-ORDER BY s.zona, s.aisle, s.bay, s.lvl, s.pos
-"""
+def parse_addr(addr):
+    if not addr: return None
+    p = addr.split('-')
+    if len(p) < 6: return None
+    try:
+        return (p[0], int(p[2]), int(p[3]), int(p[4]), int(p[5]))
+    except ValueError:
+        return None
 
-SQL_CUT = f"""
-SELECT FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', MAX(FBM_LAST_UPDATED)) AS cut
-FROM `{PROJECT}.WHOWNER.BT_FBM_STOCK_3_ADDRESS` WHERE WAREHOUSE_ID = @wh
-"""
-
-def fetch(wh, zones):
+def fetch():
     client = bigquery.Client(project=PROJECT)
-    cfg = bigquery.QueryJobConfig(query_parameters=[
-        bigquery.ScalarQueryParameter('wh', 'STRING', wh),
-        bigquery.ArrayQueryParameter('zones', 'STRING', zones)])
-    print(f"  Consultando {wh} ({', '.join(zones)})...", end=' ', flush=True)
-    rows = list(client.query(SQL, job_config=cfg).result())
-    print(f"{len(rows):,} ubicaciones")
-    if not rows:
-        raise SystemExit(f"Sin ubicaciones para {wh} en las zonas {zones}: revisa el CD y las zonas.")
 
-    data = {}
-    for r in rows:
-        z = data.setdefault(r.zona, {'aisles': {}})
-        bay = z['aisles'].setdefault(str(r.aisle), {}).setdefault(str(r.bay), [])
-        bay.append([r.lvl, r.pos, int(r.n), int(r.qty or 0), ','.join(r.skus or []), r.id])
+    # Paso 1: todas las ubicaciones físicas disponibles en WMS (incluye vacías)
+    q_layout = f"""
+    SELECT
+      ADDRESS_ID,
+      CAST(ADRS_AISLE    AS INT64) AS aisle,
+      CAST(ADRS_BAY      AS INT64) AS bay,
+      CAST(ADRS_LEVEL    AS INT64) AS level,
+      CAST(ADRS_POSITION AS INT64) AS pos,
+      COALESCE(ADRS_STORAGE_TYPE,    '')  AS adrs_type,
+      COALESCE(ADRS_ADDRESS_TYPE_ID, '')  AS adrs_class
+    FROM `{PROJECT}.WHOWNER.LK_FBM_WMS_ADDRESSES`
+    WHERE WAREHOUSE_ID = '{WAREHOUSE}'
+      AND SPLIT(ADDRESS_ID, '-')[OFFSET(0)] IN ({ZONES_SQL})
+      AND LOWER(ADRS_STATUS) = 'available'
+    """
+    print("  Consultando layout WMS...", end=' ', flush=True)
+    layout_rows = list(client.query(q_layout).result())
+    print(f"{len(layout_rows):,} ubicaciones físicas")
 
-    cut_cfg = bigquery.QueryJobConfig(query_parameters=[bigquery.ScalarQueryParameter('wh', 'STRING', wh)])
-    cut = list(client.query(SQL_CUT, job_config=cut_cfg).result())
-    stock_cut = cut[0].cut if cut else None
+    slots = {}
+    for r in layout_rows:
+        aid = r.ADDRESS_ID
+        parsed = parse_addr(aid)
+        zone = parsed[0] if parsed else aid.split('-')[0]
+        tipo = (r.adrs_type or '').strip()
+        clase = (r.adrs_class or '').strip()
+        slots[aid] = {
+            'id': aid, 'zone': zone,
+            'aisle': r.aisle, 'bay': r.bay, 'level': r.level, 'pos': r.pos,
+            'cap': CAP_BY_ZONE.get(zone, 6),
+            'tipo': tipo, 'clase': clase,
+            'qty': 0, 'avail': 0, 'res': 0, 'skus': []
+        }
 
-    stats = {}
-    for zona, z in data.items():
-        n_slots = occ = multi = 0
-        dist = [0, 0, 0, 0]
-        for aisle in z['aisles'].values():
-            for slots in aisle.values():
-                for _lvl, _pos, n, _qty, _skus, _id in slots:
-                    n_slots += 1
-                    if n > 0: occ += 1
-                    if n > 1: multi += 1
-                    if n >= 1: dist[min(n, 4) - 1] += 1
-        stats[zona] = {'slots': n_slots, 'occ': occ, 'multi': multi, 'n1': dist[0], 'n2': dist[1], 'n3': dist[2], 'n4p': dist[3],
-                       'aisles': len(z['aisles'])}
+    # Paso 2: stock actual
+    q_stock = f"""
+    SELECT ADDRESS_ID, INVENTORY_ID,
+      FBM_QUANTITY AS qty, FBM_AVAILABLE AS avail,
+      FBM_RESERVED AS res
+    FROM `{PROJECT}.WHOWNER.BT_FBM_STOCK_3_ADDRESS`
+    WHERE WAREHOUSE_ID = '{WAREHOUSE}'
+      AND SPLIT(ADDRESS_ID, '-')[OFFSET(0)] IN ({ZONES_SQL})
+      AND FBM_STOCK_STATUS = 'ok'
+    ORDER BY ADDRESS_ID, INVENTORY_ID
+    """
+    print("  Consultando stock...", end=' ', flush=True)
+    stock_rows = list(client.query(q_stock).result())
+    print(f"{len(stock_rows):,} registros con stock")
+
+    for r in stock_rows:
+        aid = r.ADDRESS_ID
+        if aid not in slots:
+            parsed = parse_addr(aid)
+            if not parsed: continue
+            zone = parsed[0]
+            slots[aid] = {
+                'id': aid, 'zone': zone,
+                'aisle': parsed[1], 'bay': parsed[2], 'level': parsed[3], 'pos': parsed[4],
+                'cap': CAP_BY_ZONE.get(zone, 6),
+                'qty': 0, 'avail': 0, 'res': 0, 'skus': []
+            }
+        s = slots[aid]
+        inv = r.INVENTORY_ID
+        qty_v   = int(r.qty   or 0)
+        avail_v = int(r.avail or 0)
+        res_v   = int(r.res   or 0)
+        s['qty']   += qty_v
+        s['avail'] += avail_v
+        s['res']   += res_v
+        s['skus'].append(inv)
+        if 'sku_qtys' not in s:
+            s['sku_qtys'] = {}
+        s['sku_qtys'][inv] = {'qty': qty_v, 'avail': avail_v, 'res': res_v}
+
+    bays = {}
+    for s in slots.values():
+        key = (s['zone'], s['aisle'], s['bay'])
+        if key not in bays:
+            bays[key] = {
+                'zone': s['zone'], 'aisle': s['aisle'], 'bay': s['bay'],
+                'n_slots': 0, 'n_cap': 0, 'n_skus': 0, 'qty': 0, 'avail': 0,
+                'slots': []
+            }
+        b = bays[key]
+        b['n_slots'] += 1
+        b['n_cap']   += s['cap']
+        b['n_skus']  += len(s['skus'])
+        b['qty']     += s['qty']
+        b['avail']   += s['avail']
+        b['slots'].append({'id': s['id'], 'level': s['level'], 'pos': s['pos'],
+                           'tipo': s.get('tipo',''), 'clase': s.get('clase',''),
+                           'skus': s['skus'], 'sku_qtys': s.get('sku_qtys', {}),
+                           'qty': s['qty'], 'avail': s['avail']})
+
+    bays_list = sorted(bays.values(), key=lambda b: (b['aisle'], b['bay']))
+    total_slots     = len(slots)
+    all_skus        = [len(s['skus']) for s in slots.values()]
+    total_sku_slots = sum(all_skus)
+    # Ocupación = slots con al menos 1 SKU / total slots (no dividir por cap)
+    locs_occ        = sum(1 for s in slots.values() if len(s['skus']) > 0)
+    # Multi-SKU = slots con más de 1 SKU diferente
+    locs_multi      = sum(1 for s in slots.values() if len(s['skus']) > 1)
+    stats = {
+        'total_slots': total_slots, 'total_bays': len(bays),
+        'total_sku_slots': total_sku_slots,
+        'locs_occ': locs_occ,
+        'locs_multi': locs_multi,
+        # % de ubicaciones físicas que tienen al menos 1 SKU
+        'pct_occ': round(locs_occ / total_slots * 100, 1) if total_slots else 0,
+        # % de ubicaciones con más de 1 SKU (multi-SKU)
+        'pct_multi': round(locs_multi / locs_occ * 100, 1) if locs_occ else 0,
+        'avg_skus': round(sum(all_skus)/len(all_skus), 2) if all_skus else 0,
+        'max_skus': max(all_skus) if all_skus else 0,
+        'locs_full': sum(1 for s in slots.values() if len(s['skus']) >= s['cap']),
+        'locs_1': sum(1 for s in slots.values() if len(s['skus'])==1),
+        'locs_2': sum(1 for s in slots.values() if len(s['skus'])==2),
+        'locs_3': sum(1 for s in slots.values() if len(s['skus'])==3),
+        'locs_4plus': sum(1 for s in slots.values() if len(s['skus'])>=4),
+    }
+    # Hora real de los datos: ultimo cambio de stock presente en BigQuery. 'updated' es solo cuando corrio
+    # este script; BigQuery llega con ~1-1.5 h de retraso, asi que ambas horas pueden diferir bastante.
+    cut_rows = list(client.query(f"""
+        SELECT FORMAT_DATETIME('%Y-%m-%d %H:%M:%S', MAX(FBM_LAST_UPDATED)) AS cut
+        FROM `{PROJECT}.WHOWNER.BT_FBM_STOCK_3_ADDRESS` WHERE WAREHOUSE_ID = '{WAREHOUSE}'""").result())
+    stock_cut = cut_rows[0].cut if cut_rows else None
     now = datetime.now(tz=TZ)
-    # 'updated' = cuando corrio este script; 'stock_cut' = ultimo cambio de stock presente en BigQuery (el dato real).
-    return {'wh': wh, 'date': now.strftime('%Y-%m-%d'), 'updated': now.strftime('%H:%M:%S'),
-            'stock_cut': stock_cut, 'stats': stats, 'zones': data}
+    return {'date': now.strftime('%Y-%m-%d'), 'updated': now.strftime('%H:%M:%S'), 'stock_cut': stock_cut,
+            'wh': WAREHOUSE, 'stats': stats, 'bays': bays_list}
 
 def save(data):
     os.makedirs('data', exist_ok=True)
-    path = f"data/ocupacion_{data['wh']}.json"
+    path = f'data/ocupacion_{WAREHOUSE}.json'
     with open(path, 'w', encoding='utf-8') as f:
         json.dump(data, f, separators=(',', ':'), ensure_ascii=False)
-    tot = sum(s['slots'] for s in data['stats'].values())
-    occ = sum(s['occ'] for s in data['stats'].values())
-    print(f"  Guardado: {path}  ({tot:,} ubicaciones, {occ:,} con stock, {os.path.getsize(path)/1024:.0f} KB)")
-    for z, s in data['stats'].items():
-        print(f"    {z}: {s['slots']:,} ubic. · {s['occ']:,} ocupadas ({s['occ']/s['slots']*100:.1f} %) · {s['aisles']} pasillos")
-
-def arg(args, name, default):
-    return args[args.index(name) + 1] if name in args and args.index(name) + 1 < len(args) else default
+    kb = os.path.getsize(path) / 1024
+    s = data['stats']
+    print(f"  Guardado: {path}  ({s['total_slots']:,} slots · {s['total_bays']:,} bays · {kb:.0f} KB)")
 
 def main():
     args = sys.argv[1:]
-    wh = arg(args, '--wh', 'CLRM04').upper()
-    zones = [z.strip().upper() for z in arg(args, '--zones', 'RS,RK,BL').split(',') if z.strip()]
-    if '--watch' in args:
-        interval = int(arg(args, '--watch', '120'))
-        print(f"Modo watch cada {interval}s. Ctrl+C para detener.")
+    watch = '--watch' in args
+    interval = 60
+    if watch:
+        idx = args.index('--watch')
+        if idx + 1 < len(args):
+            try: interval = int(args[idx + 1])
+            except ValueError: pass
+        print(f"Modo watch — actualizando cada {interval}s. Ctrl+C para detener.")
         while True:
-            try: save(fetch(wh, zones))
+            print(f"\n[{datetime.now(tz=TZ).strftime('%H:%M:%S')}] Fetching...")
+            try: save(fetch())
             except Exception as e: print(f"  ERROR: {e}")
             time.sleep(interval)
     else:
-        save(fetch(wh, zones))
+        print(f"Fetching ocupacion {WAREHOUSE} ({', '.join(ZONES)})...")
+        save(fetch())
 
 if __name__ == '__main__':
     main()
